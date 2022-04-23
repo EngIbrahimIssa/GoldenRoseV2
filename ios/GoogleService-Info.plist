@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>562837858057-i3610er5ig1b8dd31472qk2pgh6p7021.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.562837858057-i3610er5ig1b8dd31472qk2pgh6p7021</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAt1J9eBv-TcQvwwCWwGkX9EusJ_8eS9b8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>562837858057</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.appsbunches.goldenrose</string>
+	<key>PROJECT_ID</key>
+	<string>goldenrose-df198</string>
+	<key>STORAGE_BUCKET</key>
+	<string>goldenrose-df198.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:562837858057:ios:08607860a76921201a55d8</string>
+</dict>
+</plist>
