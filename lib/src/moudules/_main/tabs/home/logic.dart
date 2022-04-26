@@ -1,21 +1,19 @@
-import 'dart:async';
 import 'dart:developer';
 
-import 'package:entaj/src/app_config.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/category_model.dart';
-import 'package:entaj/src/entities/module_model.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/moudules/_main/widgets/annoucement_bar_widget.dart';
-import 'package:entaj/src/moudules/_main/widgets/slider_widget.dart';
-import 'package:entaj/src/moudules/_main/widgets/testimonials_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_indicator.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:entaj/src/moudules/_main/widgets/features_widget.dart';
+import 'package:entaj/src/moudules/_main/widgets/video_widget.dart';
+
+import '../../widgets/partners_widget.dart';
+
+import '../../../../app_config.dart';
+import '../../../../entities/module_model.dart';
+import '../../logic.dart';
+import '../../widgets/annoucement_bar_widget.dart';
+import '../../widgets/categories_grid_widget.dart';
+import '../../widgets/slider_widget.dart';
+import '../../widgets/testimonials_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart' as ui;
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../entities/home_screen_model.dart';
 import '../../widgets/categories_widget.dart';
@@ -48,28 +46,72 @@ class HomeLogic extends GetxController {
     moduleList.sort((a, b) => a.settings!.order!.compareTo(b.settings!.order!));
     widgets.add(const AnnouncementBarWidget());
     widgets.add(const CategoriesWidget());
+    bool hasSlider = false;
     for (var element in moduleList) {
       if (element.settings?.slider?.isNotEmpty == true) {
         if (element.fileName == 'main-slider.twig') {
-          widgets.add(SliderWidget(
-              sliderItems: element.settings?.slider ?? [],
-              hideDots: element.settings?.slider?.length == 1
-                  ? true
-                  : element.settings?.hideDots ?? true));
+          if (!hasSlider) {
+            if (AppConfig.showOneSlider) {
+              hasSlider = true;
+            }
+            widgets.add(SliderWidget(
+                sliderItems: element.settings?.slider ?? [],
+                textColor: element.settings?.textColor,
+                hideDots: element.settings?.slider?.length == 1
+                    ? true
+                    : element.settings?.hideDots ?? true));
+          }
         }
       } else if (element.fileName == 'ggallery.twig') {
         if (element.settings?.gallery != null) {
-          widgets.add(
-              GalleryWidget(galleryItems: element.settings?.gallery ?? []));
+          widgets.add(GalleryWidget(
+            galleryItems: element.settings?.gallery ?? [],
+            title: element.settings?.title,
+          ));
+        }
+      } else if (element.fileName == 'features-section.twig') {
+        if (element.settings?.storeFeatures != null) {
+          widgets.add(FeaturesWidget(
+              storeFeatures: element.settings?.storeFeatures ?? []));
         }
       } else if (element.fileName == 'category-products-section.twig') {
         widgets.add(FeaturedProductsWidget(
-            featuredProducts: element.settings?.category));
+          featuredProducts: element.settings?.category,
+          moreText: element.settings?.displayMore == true
+              ? element.settings?.moreText
+              : null,
+        ));
       } else if (element.fileName == 'testimonials.twig') {
         widgets.add(TestimonialWidget(
           title: element.settings?.title,
-          display: element.settings?.hideDots == true,
+          display: true,
           items: element.settings?.testimonials ?? [],
+        ));
+      } else if (element.fileName == 'partners.twig') {
+        widgets.add(PartnersWidget(
+            title: element.settings?.title,
+            gallery: element.settings?.storePartners));
+      } else if (element.fileName == 'video.twig') {
+        if (element.settings?.video != null) {
+          widgets.add(VideoWidget(
+            settings: element.settings,
+          ));
+        }
+      } else if (element.fileName == 'category-section.twig') {
+        widgets.add(CategoriesGridWidget(
+          title: element.settings?.title,
+          categories: element.settings?.categories,
+          moreText: element.settings?.displayMore == true
+              ? element.settings?.moreText
+              : null,
+        ));
+      } else if (element.fileName == 'products-section.twig') {
+        widgets.add(FeaturedProductsWidget(
+          featuredProducts: element.settings?.products,
+          title: element.settings?.title,
+          moreText: element.settings?.displayMore == true
+              ? element.settings?.moreText
+              : null,
         ));
       }
     }
@@ -82,6 +124,7 @@ class HomeLogic extends GetxController {
   ///AnnouncementBar
   bool announcementBarDisplay = true;
   String? announcementBarText;
+  String? announcementBarLink;
   String? announcementBarForegroundColor;
   String? announcementBarBackgroundColor;
 
@@ -92,13 +135,14 @@ class HomeLogic extends GetxController {
 
   getAnnouncementBar() {
     getDisplayOrderModule();
-    if (AppConfig.isSoreUseOldTheme) {
+    if (AppConfig.isSoreUseNewTheme) {
       _mainLogic.homeScreenOldThemeModel?.payload?.files?.forEach((element) {
         if (element.name == 'header.twig') {
           if (element.modules != null) {
             if (element.modules!.isNotEmpty) {
               var item = element.modules!.first;
               announcementBarText = item.settings?.announcementBarText;
+              announcementBarLink = item.settings?.announcementBarUrl;
               announcementBarDisplay = announcementBarText != null &&
                   announcementBarText != '' &&
                   item.settings?.announcementBarDisplay == true &&
@@ -131,7 +175,7 @@ class HomeLogic extends GetxController {
   List<Items> sliderItems = [];
 
   getSlider() {
-    if (AppConfig.isSoreUseOldTheme) {
+    if (AppConfig.isSoreUseNewTheme) {
       _mainLogic.homeScreenOldThemeModel?.payload?.files?.forEach((element) {
         if (element.name == 'main-slider.twig') {
           if (element.modules != null) {
@@ -155,7 +199,7 @@ class HomeLogic extends GetxController {
   List<Gallery> galleryItems = [];
 
   getGallery() {
-    if (AppConfig.isSoreUseOldTheme) {
+    if (AppConfig.isSoreUseNewTheme) {
       galleryItems = [];
       _mainLogic.homeScreenOldThemeModel?.payload?.files?.forEach((element) {
         if (element.name == 'ggallery.twig') {

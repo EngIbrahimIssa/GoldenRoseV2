@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/reviews_model.dart';
-import 'package:entaj/src/moudules/dialog/add_review_dialog.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../data/remote/api_requests.dart';
+import '../../entities/reviews_model.dart';
+import '../dialog/add_review_dialog.dart';
+import '../../utils/error_handler/error_handler.dart';
 import 'package:flutter/material.dart';
   import 'package:get/get.dart';
 

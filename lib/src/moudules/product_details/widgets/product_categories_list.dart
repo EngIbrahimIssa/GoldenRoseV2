@@ -1,6 +1,5 @@
-import 'package:entaj/src/moudules/category_details/view.dart';
-import 'package:entaj/src/moudules/product_details/logic.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../logic.dart';
+import '../../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

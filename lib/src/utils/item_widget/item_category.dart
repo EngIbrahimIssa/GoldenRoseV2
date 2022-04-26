@@ -1,17 +1,16 @@
-import 'package:entaj/src/binding.dart';
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/entities/category_model.dart';
-import 'package:entaj/src/moudules/category_details/view.dart';
-import 'package:entaj/src/utils/custom_widget/custom_image.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../colors.dart';
+import '../../entities/category_model.dart';
+import '../custom_widget/custom_image.dart';
+import '../custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class ItemCategory extends StatelessWidget {
   final CategoryModel? categoryModel;
+  final double? width;
 
-  const ItemCategory(this.categoryModel);
+  const ItemCategory(this.categoryModel, this.width);
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +23,7 @@ class ItemCategory extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20.sp),
         child: Container(
+          width: width,
           color: categoryBackgroundColor,
           child: Column(
             children: [

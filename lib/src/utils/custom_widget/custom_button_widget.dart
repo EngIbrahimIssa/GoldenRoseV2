@@ -1,4 +1,6 @@
-import 'package:entaj/src/colors.dart';
+import 'package:entaj/src/app_config.dart';
+
+import '../../colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -8,7 +10,7 @@ class CustomButtonWidget extends StatelessWidget {
   final String title;
   final VoidCallback? onClick;
   final bool loading;
-  final Color? color;
+  final Color color;
   final Color textColor;
   final double padding;
   final double height;
@@ -40,11 +42,13 @@ class CustomButtonWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: padding),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          primary: color,
+          primary: !AppConfig.showButtonWithBorder ? color : textColor,
           elevation: elevation,
           padding: EdgeInsets.symmetric(vertical: 5.h),
           shape: RoundedRectangleBorder(
-              side: BorderSide(color: textColor, width: widthBorder),
+              side: BorderSide(
+                  color: AppConfig.showButtonWithBorder ? color : textColor,
+                  width: AppConfig.showButtonWithBorder ? 1 : widthBorder),
               borderRadius: BorderRadius.circular(radius)),
         ),
         onPressed: loading ? null : onClick,
@@ -52,11 +56,11 @@ class CustomButtonWidget extends StatelessWidget {
             ? CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.grey.shade100))
             : CustomText(
-              title,
-              fontSize: textSize,
-              textAlign: TextAlign.center,
-              color: textColor,
-            ),
+                title,
+                fontSize: textSize,
+                textAlign: TextAlign.center,
+                color: AppConfig.showButtonWithBorder ? color : textColor,
+              ),
       ),
     );
   }

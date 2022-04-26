@@ -1,10 +1,9 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/item_widget/item_order.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import '../../../../colors.dart';
+import '../../../../images.dart';
+import '../../../../utils/custom_widget/custom_button_widget.dart';
+import '../../../../utils/custom_widget/custom_text.dart';
+import '../../../../utils/item_widget/item_order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

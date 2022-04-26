@@ -12,30 +12,33 @@ class CustomText extends StatelessWidget {
   final int? maxLines;
   final double? height;
   final bool? lineThrough;
+  final TextOverflow? overflow;
 
   const CustomText(this.text,
       {Key? key,
-      this.fontSize,
-      this.color = Colors.black,
-      this.textAlign = TextAlign.start,
-      this.onTap,
-      this.fontWeight,
-      this.maxLines,
-      this.lineThrough,
-      this.height})
+        this.fontSize,
+        this.color = Colors.black,
+        this.textAlign = TextAlign.start,
+        this.onTap,
+        this.fontWeight,
+        this.maxLines,
+        this.lineThrough,
+        this.overflow,
+        this.height})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    double fs = ((fontSize == null ? 12 : fontSize!) + 5);
+    double fs = ((fontSize == null ? 12 : fontSize!) + 4);
     return Text(
       text ?? '',
       textAlign: textAlign,
       style: TextStyle(
-        decoration: lineThrough !=null ?  TextDecoration.lineThrough : null,
+          decoration: lineThrough != null ? TextDecoration.lineThrough : null,
           color: color,
           fontSize: fs.sp,
-         // fontWeight: fontWeight,
+          overflow: overflow,
+          fontWeight: fontWeight,
           height: height),
       maxLines: maxLines,
     );

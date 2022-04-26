@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:entaj/src/moudules/product_details/logic.dart';
+import '../logic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,7 +20,7 @@ class ProductAddToCartWidget extends StatefulWidget {
   final String mProductId;
   final AppEvents _appEvents;
 
-  ProductAddToCartWidget(this.mProductId, this._appEvents, {Key? key})
+  const ProductAddToCartWidget(this.mProductId, this._appEvents, {Key? key})
       : super(key: key);
 
   @override
@@ -45,7 +45,7 @@ class _ProductAddToCartWidgetState extends State<ProductAddToCartWidget> {
                       margin: EdgeInsetsDirectional.only(start: 0, end: 5),
                     )),
                 SizedBox(
-                  width: 50.h,
+                  width: 55.h,
                   child: Center(
                     child: GetBuilder<ProductDetailsLogic>(
                         id: 'quantity',
@@ -53,15 +53,64 @@ class _ProductAddToCartWidgetState extends State<ProductAddToCartWidget> {
                           return TextField(
                             controller: logic.quantityController,
                             textAlign: TextAlign.center,
-                            maxLength: 3,
+                            maxLength: 4,
                             textDirection: TextDirection.ltr,
                             onChanged: (s) {
+                              if (s.isEmpty) {
+                                return;
+                              }
                               logic.quantityController.text =
                                   replaceArabicNumber(s);
                               logic.quantityController.selection =
                                   TextSelection.fromPosition(TextPosition(
                                       offset: logic
                                           .quantityController.text.length));
+
+                              var inputQty = int.parse(logic.quantityController.text.toString());
+                              var maxQuantityPerCart = logic.productModel?.purchaseRestrictions?.maxQuantityPerCart;
+                              var productQuantity = logic.productModel?.quantity;
+                              log('productQty $productQuantity --- inputQty $inputQty');
+
+                              if(maxQuantityPerCart != null && productQuantity !=null){
+                                if(productQuantity < maxQuantityPerCart){
+                                  if (inputQty >= productQuantity) {
+                                    logic.quantityController.text =
+                                        productQuantity.toString();
+
+                                    return;
+                                  }
+                                }else{
+                                  if (inputQty >= maxQuantityPerCart) {
+                                    logic.quantityController.text =
+                                        maxQuantityPerCart.toString();
+
+                                    return;
+                                  }
+                                }
+                              }
+                              if (maxQuantityPerCart != null) {
+                                if (inputQty >= maxQuantityPerCart) {
+                                  logic.quantityController.text =
+                                      maxQuantityPerCart.toString();
+                                  return;
+                                }
+                              }
+                              if(logic.productModel!.quantity == null) return;
+
+
+                              if (logic.productModel?.purchaseRestrictions?.maxQuantityPerCart != null) {
+                                if (inputQty >= logic.productModel!.purchaseRestrictions!.maxQuantityPerCart!) {
+                                  logic.quantityController.text =
+                                      logic.productModel!.purchaseRestrictions!.maxQuantityPerCart!.toString();
+                                  return;
+                                }
+                              }else if (productQuantity < inputQty) {
+                                logic.quantityController.text =
+                                    (logic.productModel!.quantity)
+                                        .toString();
+                                return;
+                              }
+
                             },
                             textInputAction: TextInputAction.done,
                             keyboardType: TextInputType.number,
@@ -90,19 +139,12 @@ class _ProductAddToCartWidgetState extends State<ProductAddToCartWidget> {
                             id: 'addToCart${widget.mProductId}',
                             autoRemove: false,
                             builder: (cartLogic) {
-                              log('GetBuilder${widget.mProductId}');
                               return CustomButtonWidget(
                                 title: "أضف للسلة",
                                 height: double.infinity,
                                 loading: cartLogic.isCartLoading,
-                                widthBorder:
-                                AppConfig.showButtonWithBorder ? 1.5 : 0,
-                                textColor: AppConfig.showButtonWithBorder
-                                    ? primaryColor
-                                    : Colors.white,
-                                color: AppConfig.showButtonWithBorder
-                                    ? Colors.white
-                                    : primaryColor,
+                                textColor: Colors.white,
+                                color:  primaryColor,
                                 onClick: () async {
                                   logic.update([widget.mProductId]);
                                   var minQty = logic
@@ -154,29 +196,32 @@ class _ProductAddToCartWidgetState extends State<ProductAddToCartWidget> {
                             child: Image.asset(
                               iconCart,
                               scale: 6,
-                              color: Colors.white,
+                              color: textAddToCartColor,
                             ))
                       ],
                     ),
                   ),
                 ),
-                if(AppConfig.showWhatsAppIconInProductPage) Container(
-                  decoration: BoxDecoration(
-                      color: greenColor,
-                      borderRadius: BorderRadius.circular(15.sp)),
-                  height: double.infinity,
-                  margin: const EdgeInsetsDirectional.only(start: 5),
-                  child: IconButton(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    icon: Image.asset(
-                      iconWhatsapp,
-                      scale: 2,
+                if (AppConfig.showWhatsAppIconInProductPage)
+                  Container(
+                    decoration: BoxDecoration(
+                        color: primaryColor,
+                        borderRadius: BorderRadius.circular(15.sp)),
+                    height: double.infinity,
+                    margin: const EdgeInsetsDirectional.only(start: 5),
+                    child: IconButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 5),
+                      icon: Image.asset(
+                        iconWhatsapp,
+                        scale: 2,
+                      ),
+                      onPressed: () =>
+                          logic.goToWhatsApp(
+                              message:
+                              'احتاج معلومات اكثر عن المنتج ${logic.productModel
+                                  ?.htmlUrl}'),
                     ),
-                    onPressed: () => logic.goToWhatsApp(
-                        message:
-                        'احتاج معلومات اكثر عن المنتج ${logic.productModel?.htmlUrl}'),
-                  ),
-                )
+                  )
               ],
             ),
           );

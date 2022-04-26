@@ -1,6 +1,6 @@
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/user_model.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../data/remote/api_requests.dart';
+import '../../entities/user_model.dart';
+import '../../utils/error_handler/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 

@@ -1,10 +1,8 @@
-import 'dart:math';
-
-import 'package:entaj/src/entities/order_model.dart';
-import 'package:entaj/src/moudules/order_details/view.dart';
-import 'package:entaj/src/moudules/upload_transfer/view.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../entities/order_model.dart';
+import '../../moudules/order_details/view.dart';
+import '../../moudules/upload_transfer/view.dart';
+import '../custom_widget/custom_button_widget.dart';
+import '../custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

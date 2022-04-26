@@ -1,13 +1,11 @@
-import 'dart:math';
-
-import 'package:entaj/src/app_config.dart';
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_list_tile.dart';
-import 'package:entaj/src/utils/custom_widget/custom_sized_box.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../../../app_config.dart';
+import '../../../../colors.dart';
+import '../../../../images.dart';
+import '../../logic.dart';
+import '../../../../utils/custom_widget/custom_button_widget.dart';
+import '../../../../utils/custom_widget/custom_list_tile.dart';
+import '../../../../utils/custom_widget/custom_sized_box.dart';
+import '../../../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -47,10 +45,11 @@ class AccountPage extends StatelessWidget {
               actions: [
                 if (logic.isLogin && logic.userModel != null)
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                    child: Image.asset(iconLogoText , color: headerLogoColor,),
-
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    child: Image.asset(
+                      iconLogoText,
+                      color: headerLogoColor,
+                    ),
                   )
               ],
             ),
@@ -64,12 +63,9 @@ class AccountPage extends StatelessWidget {
                             Positioned(
                                 left: -70.w,
                                 right: -70.w,
-                                top: (logic.isLogin && logic.userModel != null)
-                                    ? -150.h
-                                    : -120.h,
+                                top: (logic.isLogin && logic.userModel != null) ? -150.h : -120.h,
                                 child: RotationTransition(
-                                  turns:
-                                      const AlwaysStoppedAnimation(-1.9 / 360),
+                                  turns: const AlwaysStoppedAnimation(-1.9 / 360),
                                   child: Image.asset(
                                     imageArt,
                                     color: blueLightSplashBackgroundColor,
@@ -80,40 +76,40 @@ class AccountPage extends StatelessWidget {
                               width: double.infinity,
                               margin: const EdgeInsets.only(bottom: 10),
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(15, 10, 15, 20),
-                                child: (logic.isLogin &&
-                                        logic.userModel != null)
+                                padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
+                                child: (logic.isLogin && logic.userModel != null)
                                     ? Padding(
                                         padding: EdgeInsets.only(bottom: 30.h),
                                         child: Row(
                                           children: [
                                             CustomText(
-                                              "أهلا بك ".tr +
-                                                  logic.userModel!.name
-                                                      .toString(),
+                                              "أهلا بك ".tr + logic.userModel!.name.toString(),
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,
                                             ),
                                             const Spacer(),
-                                            InkWell(
-                                              onTap: () => logic.logout(),
-                                              child: Row(
-                                                children: [
-                                                  CustomText(
-                                                    "خروج".tr,
-                                                    fontSize: 14,
+                                            logic.isLogoutLoading
+                                                ? const CircularProgressIndicator(
+                                                    strokeWidth: 1,
+                                                  )
+                                                : InkWell(
+                                                    onTap: () => logic.logout(),
+                                                    child: Row(
+                                                      children: [
+                                                        CustomText(
+                                                          "خروج".tr,
+                                                          fontSize: 14,
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 8,
+                                                        ),
+                                                        Image.asset(
+                                                          iconLogout,
+                                                          scale: 2,
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                  const SizedBox(
-                                                    width: 8,
-                                                  ),
-                                                  Image.asset(
-                                                    iconLogout,
-                                                    scale: 2,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
                                           ],
                                         ),
                                       )
@@ -128,12 +124,12 @@ class AccountPage extends StatelessWidget {
                                             height: 20,
                                           ),
                                           Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                50.w, 10.h, 50.w, 0),
+                                            padding: EdgeInsets.fromLTRB(50.w, 10.h, 50.w, 0),
                                             child: CustomButtonWidget(
                                               title: "تسجيل / دخول مستخدم".tr,
                                               onClick: () => logic.goToLogin(),
-                                              color: greenLightColor,
+                                              color: buttonBackgroundLoginColor,
+                                              textColor: buttonTextLoginColor,
                                             ),
                                           )
                                         ],
@@ -152,12 +148,12 @@ class AccountPage extends StatelessWidget {
                     Column(
                       children: [
                         if (logic.isLogin && logic.userModel != null)
-                          CustomListTile("تعديل الملف الشخصي".tr,
-                                  () => logic.goToEditAccount(), iconEdit),
+                          CustomListTile(
+                              "تعديل الملف الشخصي".tr, () => logic.goToEditAccount(), iconEdit),
                         if (AppConfig.isEnableWishlist)
                           CustomListTile(
                             "المفضلة".tr,
-                                () {
+                            () {
                               logic.goWishlistPage();
                             },
                             iconWishlist,
@@ -172,8 +168,7 @@ class AccountPage extends StatelessWidget {
                           InkWell(
                             onTap: () => logic.changeLanguage(),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 15, vertical: 10),
+                              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                               child: Row(
                                 children: [
                                   Image.asset(
@@ -210,145 +205,167 @@ class AccountPage extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (_mainLogic.settingModel?.footer?.aboutUs?.enabled ==
-                        true)
+                    if (_mainLogic.settingModel?.footer?.aboutUs?.enabled == true)
                       CustomListTile(
                         "من نحن".tr,
-                            () => logic.goToAboutUsPage(),
+                        () => logic.goToAboutUsPage(),
                         iconAbout,
                       ),
-                    GetBuilder<AccountLogic>(
-                        id: "privacy",
-                        builder: (logic) {
-                          return logic.isPrivacyLoading
-                              ? const Center(child: CircularProgressIndicator())
-                              : CustomListTile("سياسة الخصوصية والاستخدام".tr,
-                                  () => logic.goToPrivacyPolicy(), iconPolices);
-                        }),
-                    CustomListTile(
-                      "الشروط والأحكام".tr,
-                          () => logic.goToTermsAndConditions(),
-                      iconPaper,
-                    ),
-                    GetBuilder<AccountLogic>(
-                        id: "refund",
-                        builder: (logic) {
-                          return logic.isRefundLoading
-                              ? const Center(child: CircularProgressIndicator())
-                              : CustomListTile(
-                            "سياسة الإستبدال والاسترجاع".tr,
-                                () => logic.getRefundPolicy(),
-                            iconRefund,
-                          );
-                        }),
+                    if (_mainLogic.pageModelPrivacy?.contentWithoutTags?.isNotEmpty == true)
+                      GetBuilder<AccountLogic>(
+                          id: "privacy",
+                          builder: (logic) {
+                            return logic.isPrivacyLoading
+                                ? const Center(child: CircularProgressIndicator())
+                                : CustomListTile("سياسة الخصوصية والاستخدام".tr,
+                                    () => logic.goToPrivacyPolicy(), iconPolices);
+                          }),
+                    if (_mainLogic.pageModelTerms?.contentWithoutTags?.isNotEmpty == true)
+                      CustomListTile(
+                        "الشروط والأحكام".tr,
+                        () => logic.goToTermsAndConditions(),
+                        iconPaper,
+                      ),
+                    if (_mainLogic.pageModelRefund?.contentWithoutTags?.isNotEmpty == true)
+                      GetBuilder<AccountLogic>(
+                          id: "refund",
+                          builder: (logic) {
+                            return logic.isRefundLoading
+                                ? const Center(child: CircularProgressIndicator())
+                                : CustomListTile(
+                                    "سياسة الإستبدال والاسترجاع".tr,
+                                    () => logic.getRefundPolicy(),
+                                    iconRefund,
+                                  );
+                          }),
+                    if (_mainLogic.pageModelSuggestions?.contentWithoutTags?.isNotEmpty == true)
+                      CustomListTile(
+                        "الشكاوى والاقتراحات".tr,
+                        () => logic.goToSuggestions(),
+                        iconPaper,
+                      ),
+                    if (_mainLogic.faqList.isNotEmpty)
+                      CustomListTile(
+                        'الأسئلة الشائعة'.tr,
+                        () => logic.goToFaq(),
+                        iconPaper,
+                      ),
                     CustomListTile(
                       "خيارات الشحن".tr,
-                          () => logic.goToShippingMethod(),
+                      () => logic.goToShippingMethod(),
                       iconDeliveryMethod,
                     ),
                     CustomListTile(
                       "شارك التطبيق".tr,
-                          () => logic.shareApp(),
+                      () => logic.shareApp(),
                       iconShare,
                     ),
                     GetBuilder<MainLogic>(
                         id: 'pages',
                         init: Get.find<MainLogic>(),
                         builder: (mainLogic) {
-                          return mainLogic.pagesList.isEmpty
-                              ? const SizedBox()
-                              : CustomListTile(
-                            "الصفحات الإضافية".tr,
-                                () => logic.goToPagesPage(),
-                            iconPaper,
-                          );
+                          return AppConfig.isSoreUseNewTheme
+                              ? CustomListTile(
+                                  "الصفحات الإضافية".tr,
+                                  () => logic.goToPagesPage(),
+                                  iconPaper,
+                                )
+                              : mainLogic.pagesList.isEmpty
+                                  ? const SizedBox()
+                                  : CustomListTile(
+                                      "الصفحات الإضافية".tr,
+                                      () => logic.goToPagesPage(),
+                                      iconPaper,
+                                    );
                         }),
-                    Divider(
-                      thickness: 3,
-                      color: Colors.grey.shade200,
-                    ),
-                    CustomListTile(
-                      "الشحن إلى".tr,
-                          () => logic.goToCountries(),
-                      iconDeliveryMethod,
-                    ),
-                    Divider(
-                      thickness: 3,
-                      color: Colors.grey.shade200,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.all(15),
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15.sp),
-                          color: Colors.grey.shade100),
-                      child: Row(
-                        children: [
-                          CustomText(
-                            "شبكاتنا".tr,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          const Spacer(),
-                          if (_mainLogic.settingModel?.footer?.socialMedia
-                              ?.items?.twitter !=
-                              null)
-                            InkWell(
-                              onTap: () => logic.goToTwitter(),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  iconTwitter,
-                                  color: socialMediaIconColor,
-                                  scale: 2,
-                                ),
-                              ),
-                            ),
-                          if (_mainLogic.settingModel?.footer?.socialMedia
-                              ?.items?.snapchat !=
-                              null)
-                            InkWell(
-                              onTap: () => logic.goToLinkedin(),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  iconSnapchat,
-                                  color: socialMediaIconColor,
-                                  scale: 2,
-                                ),
-                              ),
-                            ),
-                          if (_mainLogic.settingModel?.footer?.socialMedia
-                              ?.items?.instagram !=
-                              null)
-                            InkWell(
-                              onTap: () => logic.goToInstagram(),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  iconInstagram,
-                                  color: socialMediaIconColor,
-                                  scale: 2,
-                                ),
-                              ),
-                            ),
-                          if (_mainLogic.settingModel?.footer?.socialMedia
-                              ?.items?.facebook !=
-                              null)
-                            InkWell(
-                              onTap: () => logic.goToFacebook(),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  iconFacebook,
-                                  color: socialMediaIconColor,
-                                  scale: 2,
-                                ),
-                              ),
-                            ),
-                        ],
+                    if (AppConfig.showShippingTo)
+                      Divider(
+                        thickness: 3,
+                        color: Colors.grey.shade200,
                       ),
+                    if (AppConfig.showShippingTo)
+                      CustomListTile(
+                        "الشحن إلى".tr,
+                        () => logic.goToCountries(),
+                        iconDeliveryMethod,
+                      ),
+                    Divider(
+                      thickness: 3,
+                      color: Colors.grey.shade200,
                     ),
+                     (_mainLogic.settingModel?.footer?.socialMedia?.items?.twitter == null &&
+                        _mainLogic.settingModel?.footer?.socialMedia?.items?.facebook == null &&
+                        _mainLogic.settingModel?.footer?.socialMedia?.items?.instagram == null &&
+                        _mainLogic.settingModel?.footer?.socialMedia?.items?.snapchat == null)?SizedBox():
+                      Container(
+                        margin: const EdgeInsets.all(15),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.sp),
+                            color: Colors.grey.shade100),
+                        child: Row(
+                          children: [
+                            CustomText(
+                              "شبكاتنا".tr,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            const Spacer(),
+                            if (_mainLogic.settingModel?.footer?.socialMedia?.items?.twitter !=
+                                null)
+                              InkWell(
+                                onTap: () => logic.goToTwitter(),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    iconTwitter,
+                                    color: socialMediaIconColor,
+                                    scale: 2,
+                                  ),
+                                ),
+                              ),
+                            if (_mainLogic.settingModel?.footer?.socialMedia?.items?.snapchat !=
+                                null)
+                              InkWell(
+                                onTap: () => logic.goToLinkedin(),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    iconSnapchat,
+                                    color: socialMediaIconColor,
+                                    scale: 2,
+                                  ),
+                                ),
+                              ),
+                            if (_mainLogic.settingModel?.footer?.socialMedia?.items?.instagram !=
+                                null)
+                              InkWell(
+                                onTap: () => logic.goToInstagram(),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    iconInstagram,
+                                    color: socialMediaIconColor,
+                                    scale: 2,
+                                  ),
+                                ),
+                              ),
+                            if (_mainLogic.settingModel?.footer?.socialMedia?.items?.facebook !=
+                                null)
+                              InkWell(
+                                onTap: () => logic.goToFacebook(),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Image.asset(
+                                    iconFacebook,
+                                    color: socialMediaIconColor,
+                                    scale: 2,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Column(
@@ -365,123 +382,123 @@ class AccountPage extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(25.sp),
-                                  onTap: () => logic.goToPhone(),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                        BorderRadius.circular(25.sp),
-                                        color: greenLightColor),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: [
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                        Image.asset(
-                                          iconCall,
-                                          scale: 2,
-                                        ),
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                        CustomText(
-                                          "اتصال".tr,
-                                          fontSize: 11,
-                                          color: Colors.white,
-                                        ),
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                      ],
+                              if (AppConfig.showCall)
+                                Expanded(
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(25.sp),
+                                    onTap: () => logic.goToPhone(),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(25.sp),
+                                          color: greenLightColor),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                          Image.asset(
+                                            iconCall,
+                                            scale: 2,
+                                            color: buttonTextCallColor,
+                                          ),
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                          CustomText(
+                                            "اتصال".tr,
+                                            fontSize: 11,
+                                            color: buttonTextCallColor,
+                                          ),
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
                               const CustomSizedBox(
                                 width: 5,
                               ),
-                              Expanded(
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(25.sp),
-                                  onTap: () => logic.goToWhatsApp(),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                        BorderRadius.circular(25.sp),
-                                        color: greenLightColor),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: [
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                        Image.asset(
-                                          iconWhatsapp,
-                                          scale: 2,
-                                        ),
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                        CustomText(
-                                          "واتس اب".tr,
-                                          fontSize: 11,
-                                          color: Colors.white,
-                                        ),
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                      ],
+                              if (AppConfig.showWhatsApp)
+                                Expanded(
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(25.sp),
+                                    onTap: () => logic.goToWhatsApp(),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(25.sp),
+                                          color: greenLightColor),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                          Image.asset(
+                                            iconWhatsapp,
+                                            scale: 2,
+                                            color: buttonTextCallColor,
+                                          ),
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                          CustomText(
+                                            "واتس اب".tr,
+                                            fontSize: 11,
+                                            color: buttonTextCallColor,
+                                          ),
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
                               const CustomSizedBox(
                                 width: 5,
                               ),
-                              Expanded(
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(25.sp),
-                                  onTap: () => logic.goToEmail(),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(5),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                        BorderRadius.circular(25.sp),
-                                        color: greenLightColor),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      children: [
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                        Image.asset(
-                                          iconMail,
-                                          scale: 2,
-                                        ),
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                        CustomText(
-                                          "ايميل".tr,
-                                          fontSize: 11,
-                                          color: Colors.white,
-                                        ),
-                                        const CustomSizedBox(
-                                          width: 5,
-                                        ),
-                                      ],
+                              if (AppConfig.showEmail)
+                                Expanded(
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(25.sp),
+                                    onTap: () => logic.goToEmail(),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(25.sp),
+                                          color: greenLightColor),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                          Image.asset(
+                                            iconMail,
+                                            scale: 2,
+                                            color: buttonTextCallColor,
+                                          ),
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                          CustomText(
+                                            "ايميل".tr,
+                                            fontSize: 11,
+                                            color: buttonTextCallColor,
+                                          ),
+                                          const CustomSizedBox(
+                                            width: 5,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              )
+                                )
                             ],
                           ),
                           const CustomSizedBox(

@@ -1,17 +1,14 @@
-import 'dart:developer';
-
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/product_details_model.dart';
-import 'package:entaj/src/services/app_events.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import '../../data/remote/api_requests.dart';
+import '../../entities/product_details_model.dart';
+import '../../services/app_events.dart';
+import '../../utils/error_handler/error_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
-import '../../entities/OfferResponseModel.dart';
+import '../../entities/offer_response_model.dart';
 import '../../utils/functions.dart';
 
-class SearchLogic extends GetxController {
+class SearchLogic extends GetxController with WidgetsBindingObserver {
   final ApiRequests _apiRequests = Get.find();
   final AppEvents _appEvents = Get.find();
   final TextEditingController searchController = TextEditingController();
@@ -26,9 +23,37 @@ class SearchLogic extends GetxController {
   void onInit() {
     super.onInit();
     searchController.addListener(() {
+      //log(searchController.text.length.toString());
       mPage = 1;
+
       getProductsList(q :searchController.text ,page:mPage,forPagination: false);
     });
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance?.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async{
+    switch(state){
+
+      case AppLifecycleState.resumed:
+        break;
+      case AppLifecycleState.inactive:
+        FocusScopeNode currentFocus = FocusScope.of(Get.context!);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+        break;
+      case AppLifecycleState.paused:
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   @override
@@ -67,7 +92,11 @@ class SearchLogic extends GetxController {
       var newList = (response.data['results'] as List)
           .map((element) => ProductDetailsModel.fromJson(element))
           .toList();
-      productsList.addAll(newList);
+      if(forPagination){
+        productsList.addAll(newList);
+      }else{
+        productsList = newList;
+      }
 
       List<String> productsIds = [];
       productsList.forEach((element) {

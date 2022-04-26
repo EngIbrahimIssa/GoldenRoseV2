@@ -1,8 +1,11 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/moudules/upload_transfer/view.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_image.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../app_config.dart';
+import '../../colors.dart';
+import '../upload_transfer/view.dart';
+import '../../utils/custom_widget/custom_button_widget.dart';
+import '../../utils/custom_widget/custom_image.dart';
+import '../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -445,7 +448,8 @@ class OrderDetailsPage extends StatelessWidget {
         builder: (logic) {
           var product = logic.orderModel?.products?[index];
           return InkWell(
-            onTap: () => Get.toNamed("/product-details/$id"),
+            onTap: () => Get.toNamed(
+                "/product-details/${product?.parentId ?? product?.id}"),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               margin: const EdgeInsets.only(bottom: 15),
@@ -453,6 +457,7 @@ class OrderDetailsPage extends StatelessWidget {
                   color: Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(15.sp)),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -492,7 +497,7 @@ class OrderDetailsPage extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Expanded(
+                              Flexible(
                                 child: CustomText(
                                   product?.totalBeforeString,
                                   color: moveColor,
@@ -503,19 +508,24 @@ class OrderDetailsPage extends StatelessWidget {
                                 const SizedBox(
                                   width: 10,
                                 ),
-                              Expanded(
+                              Flexible(
                                 child: CustomText(
                                   product?.totalString,
                                   fontWeight: FontWeight.bold,
-                                  color: greenColor,
+                                  color: secondaryColor,
                                 ),
                               )
                             ],
                           )
                         ],
                       )),
+                      const SizedBox(
+                        width: 4,
+                      ),
                       Container(
-                        width: 50.sp,
+                        width: ((product?.quantity?.bitLength ?? 0) * 4.w) < 50
+                            ? 50.sp
+                            : ((product?.quantity?.bitLength ?? 0) * 4.w),
                         height: 50.sp,
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
@@ -601,7 +611,68 @@ class OrderDetailsPage extends StatelessWidget {
                                   ),
                                 ),
                               ],
-                            )
+                            ),
+                  if (AppConfig.enhancements)
+                    ListView.builder(
+                        itemCount: product?.customFields?.length ?? 0,
+                        shrinkWrap: true,
+                        padding: EdgeInsets.zero,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          var customField = product?.customFields?[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 3),
+                            child: Row(
+                              children: [
+                                Flexible(
+                                    child: CustomText(customField?.groupName ??
+                                        customField?.realName)),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                (product?.customFields?[index].type == 'IMAGE')
+                                    ? Flexible(
+                                        child: CustomImage(
+                                        url: product?.customFields?[index]
+                                            .formattedValue,
+                                        height: 70,
+                                        width: 70,
+                                      ))
+                                    : (customField?.type == 'FILE')
+                                        ? Flexible(
+                                            child: GestureDetector(
+                                            onTap: () => launch(
+                                                customField?.formattedValue ??
+                                                    ''),
+                                            child: CustomText(
+                                              'تحميل'.tr,
+                                              color: Colors.blue,
+                                            ),
+                                          ))
+                                        : Flexible(
+                                            child:
+                                                CustomText(customField?.value)),
+                                if ((customField?.type == 'DROPDOWN' ||
+                                    customField?.type == 'CHECKBOX'))
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                if ((customField?.type == 'DROPDOWN' ||
+                                    customField?.type == 'CHECKBOX'))
+                                  Flexible(
+                                      child: CustomText(customField?.realName)),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                if (customField?.additionsPrice != null &&
+                                    customField?.additionsPrice != 0)
+                                  Flexible(
+                                      child: CustomText(
+                                          customField?.additionsPriceString))
+                              ],
+                            ),
+                          );
+                        }),
                 ],
               ),
             ),

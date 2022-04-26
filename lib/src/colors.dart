@@ -25,24 +25,35 @@ final authBackgroundAppbarColor = HexColor.fromHex('#ffffff');
 const categoryBackgroundColor = Colors.white;
 const categoryTextColor = Colors.black;
 
+const categoryHomeBackgroundColor = Colors.white;
+const categoryHomeTextColor = Colors.black;
+
 /// DropDown
 const dropdownColor = Colors.grey;
 const dropdownTextColor = Colors.white;
 final dropdownDividerLineColor = Colors.grey.shade800;
 
-/// Buttons
+/// Buttons.
+//Login
+const buttonBackgroundLoginColor =
+AppConfig.showButtonWithBorder ? primaryColor: Colors.white;
+const buttonTextLoginColor =
+AppConfig.showButtonWithBorder ? Colors.white : primaryColor;
+
 //Checkout
-final buttonBackgroundCheckoutColor = HexColor.fromHex("#08DB94");
-final buttonTextCheckoutColor = HexColor.fromHex("#ffffff");
+final buttonBackgroundCheckoutColor =primaryColor ;
+final buttonTextCheckoutColor = Colors.white;
 //Coupon
-final buttonBackgroundCouponColor = HexColor.fromHex("#ffffff");
-final buttonTextCouponColor = HexColor.fromHex("#ffffff");
+final buttonBackgroundCouponColor = primaryColor;
+final buttonTextCouponColor = Colors.white;
 //Call
-final buttonBackgroundCallColor = HexColor.fromHex("#08DB94");
-final buttonTextCallColor = HexColor.fromHex("#ffffff");
+final buttonBackgroundCallColor = primaryColor;
+final buttonTextCallColor =Colors.white;
 //add to cart loading
 const progressColor =
     AppConfig.showButtonWithBorder ? primaryColor : Colors.white;
+const textAddToCartColor =
+AppConfig.showButtonWithBorder ? primaryColor : Colors.white;
 
 /// Icons
 const socialMediaIconColor = Color(0xff766030);
@@ -50,6 +61,10 @@ final iconAddToCartColor = HexColor.fromHex("#ffffff");
 
 
 const primaryColor = Color(0xffcbb085);
+const secondaryColor = primaryColor;
+// const secondaryColor = Color.fromRGBO(132, 78, 53, 1.0);
+const errorBackgroundColor = Color(0xFF616161);
+
 const greenColor = Color(0xffcbb085);
 
 const moveColor = Color.fromRGBO(234, 127, 127, 1.0);

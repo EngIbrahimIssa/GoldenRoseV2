@@ -1,7 +1,7 @@
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_sized_box.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../images.dart';
+import '../../utils/custom_widget/custom_button_widget.dart';
+import '../../utils/custom_widget/custom_sized_box.dart';
+import '../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

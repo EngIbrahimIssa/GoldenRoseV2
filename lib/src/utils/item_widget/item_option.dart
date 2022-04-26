@@ -1,7 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:entaj/src/entities/product_details_model.dart';
-import 'package:entaj/src/moudules/product_details/logic.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../entities/product_details_model.dart';
+import '../../moudules/product_details/logic.dart';
+import '../custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -18,14 +18,18 @@ class ItemOption extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CustomText(option?.name),
+        Row(
+          children: [
+            Expanded(child: CustomText(option?.name , overflow: TextOverflow.ellipsis,)),
+          ],
+        ),
         const SizedBox(
           height: 8,
         ),
       Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15.sp),
-            border: Border.all(color: greenColor, width: 2)),
+            border: Border.all(color: secondaryColor, width: 2)),
         child: Row(
           children: [
             Expanded(
@@ -64,7 +68,7 @@ class ItemOption extends StatelessWidget {
                                     ));
                               }).toList() ??
                               [];
-                        },
+                        },/*
                         hint: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
@@ -77,9 +81,9 @@ class ItemOption extends StatelessWidget {
                                   fontSize: 12,
                                 ),
                               ],
-                            )),
+                            )),*/
                         onChanged: (String? val) =>
-                            logic.onChange(val, option),
+                            logic.onChange(val, option  , withUpdate: true),
                         value: logic.mapOptions[option?.name],
                         items: choices
                             ?.map((selectedType) {

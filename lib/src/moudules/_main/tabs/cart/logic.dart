@@ -1,17 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/data/shared_preferences/pref_manger.dart';
-import 'package:entaj/src/entities/cart_model.dart';
-import 'package:entaj/src/entities/discount_response_model.dart';
-import 'package:entaj/src/moudules/payment/view.dart';
-import 'package:entaj/src/services/app_events.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../../../colors.dart';
+import '../../../../data/remote/api_requests.dart';
+import '../../../../data/shared_preferences/pref_manger.dart';
+import '../../../../entities/cart_model.dart';
+import '../../../../entities/discount_response_model.dart';
+import '../../../payment/view.dart';
+import '../../../../services/app_events.dart';
+import '../../../../utils/custom_widget/custom_text.dart';
+import '../../../../utils/error_handler/error_handler.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -50,7 +51,7 @@ class CartLogic extends GetxController {
 
   Future<bool> checkInternetConnection() async {
     var connection =
-        (await Connectivity().checkConnectivity() != ConnectivityResult.none);
+    (await Connectivity().checkConnectivity() != ConnectivityResult.none);
     hasInternet = connection;
     update(['cart']);
     return connection;
@@ -89,6 +90,7 @@ class CartLogic extends GetxController {
     try {
       isCartItemLoading = false;
       var response = await _apiRequests.getCart();
+      //log(json.encode(response.data));
       cartModel = CartModel.fromJson(response.data['payload']);
 
       clickOnAddCoupon = cartModel?.coupon != null;
@@ -188,11 +190,11 @@ class CartLogic extends GetxController {
 
   Future<void> addToCart(String? productId,
       {required bool hasOptions,
-      required String quantity,
-      required bool hasFields,
-      int? index,
-      BuildContext? context,
-      List? customUserInputFieldRequest}) async {
+        required String quantity,
+        required bool hasFields,
+        int? index,
+        BuildContext? context,
+        List? customUserInputFieldRequest}) async {
     if (productId == null) {
       Fluttertoast.showToast(
           msg: "يرجى اختيار جميع الخيارات".tr, backgroundColor: Colors.orange);
@@ -240,9 +242,9 @@ class CartLogic extends GetxController {
             Expanded(
                 child: Center(
                     child: CustomText(
-              "تم اضافة المنتج إلى السلة".tr,
-              color: Colors.white,
-            ))),
+                      "تم اضافة المنتج إلى السلة".tr,
+                      color: Colors.white,
+                    ))),
           ],
         ),
       );
@@ -260,22 +262,22 @@ class CartLogic extends GetxController {
   }
 
   void updateCartItem(int id, int quantity, {int? index}) async {
-    if(isCartItemLoading) return;
+    if (isCartItemLoading) return;
     isCartItemLoading = true;
- //   update([id]);
+    //   update([id]);
 
     try {
       var response =
-          await _apiRequests.updateCartItem(id.toString(), quantity.toString());
+      await _apiRequests.updateCartItem(id.toString(), quantity.toString());
       await getCartItems(false);
     } catch (e) {
+      await getCartItems(false);
       ErrorHandler.handleError(e);
     }
 
     isCartItemLoading = false;
 //    update([id]);
   }
-
 
   clearCoupon() {
     couponController.text = '';
@@ -289,34 +291,47 @@ class CartLogic extends GetxController {
     if (product.quantity == 1) {
       return;
     }
+
     int newQty = product.quantity! - 1;
+    if (product.purchaseRestrictions?.minQuantityPerCart != null) {
+      if ((product.purchaseRestrictions!.minQuantityPerCart! - 1) >= newQty)
+        return;
+    }
     product.quantity = newQty;
     update([product.id!]);
     startCount(product, newQty);
   }
 
   increaseQuantity(Products product) {
-    if (isCartItemLoading) return;
     int newQty = product.quantity! + 1;
+    if (product.purchaseRestrictions?.maxQuantityPerCart != null) {
+      if ((product.purchaseRestrictions!.maxQuantityPerCart! + 1) <= newQty) return;
+    }else{
+      if ((product.quantity ?? 0) > 999) return;
+    }
+    if (product.originalProductQuantity != null) {
+      if ((product.originalProductQuantity! + 1) <= newQty) return;
+    }
+    if (isCartItemLoading) return;
     product.quantity = newQty;
     update([product.id!]);
     startCount(product, newQty);
   }
 
   Timer? _timer;
+
   void startCount(Products product, newQty) async {
-    if(_timer != null) _timer?.cancel();
-    _timer = Timer(const Duration(milliseconds: 500) ,(){
+    if (_timer != null) _timer?.cancel();
+    _timer = Timer(const Duration(milliseconds: 500), () {
       updateCartItem(product.id!, newQty);
     });
-
   }
 
   void generateCheckoutToken() async {
     if (!await _prefManger.getIsLogin()) {
       Get.to(LoginPage())?.then((value) async {
         isLoading = true;
-        update(['cart']);
+        //   update(['cart1']);
         await Future.delayed(const Duration(seconds: 3));
         getCartItems(true);
       });
@@ -372,4 +387,13 @@ class CartLogic extends GetxController {
     update(['checkout']);
   }
 
+  String? getTotal() {
+    String? total;
+    try {
+      total = cartModel?.totals
+          ?.firstWhere((element) => element.code == 'total')
+          .valueString;
+    } catch (e) {}
+    return total;
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../main.dart';
+import '../../../app_config.dart';
 import '../../../colors.dart';
 import '../../../utils/custom_widget/custom_image.dart';
 import '../../../utils/custom_widget/custom_text.dart';
@@ -17,7 +18,7 @@ class ProductImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetBuilder<ProductDetailsLogic>(
         init: Get.find<ProductDetailsLogic>(),
-        id: productId,
+        id: 'images',
         builder: (logic) {
           return Column(
             children: [
@@ -44,8 +45,8 @@ class ProductImageWidget extends StatelessWidget {
                             size: 50,
                           ),
                         ),
-                  if (logic.productModel?.offerLabel != null ||
-                      (logic.productModel?.offerLabel?.length ?? 0) > 0)
+                  if ((logic.productModel?.offerLabel != null ||
+                      (logic.productModel?.offerLabel?.length ?? 0) > 0 )&& !AppConfig.enhancements)
                     Positioned(
                       left: !isArabicLanguage ? 15 : null,
                       right: isArabicLanguage ? 15 : null,
@@ -94,7 +95,7 @@ class ProductImageWidget extends StatelessWidget {
               decoration: BoxDecoration(
                   border: Border.all(
                       color: logic.selectedImageIndex == index
-                          ? greenColor
+                          ? secondaryColor
                           : Colors.grey.shade300,
                       width: 2),
                   borderRadius: BorderRadius.circular(10)),

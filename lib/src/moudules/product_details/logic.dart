@@ -4,25 +4,26 @@ import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart' as dio;
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/custom_option_field_request.dart';
-import 'package:entaj/src/entities/custom_user_input_field_request.dart';
-import 'package:entaj/src/entities/product_details_model.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/moudules/images/view.dart';
-import 'package:entaj/src/moudules/reviews/view.dart';
-import 'package:entaj/src/services/app_events.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../app_config.dart';
+import '../../data/remote/api_requests.dart';
+import '../../entities/custom_option_field_request.dart';
+import '../../entities/custom_user_input_field_request.dart';
+import '../../entities/product_details_model.dart';
+import '../_main/logic.dart';
+import '../images/view.dart';
+import '../reviews/view.dart';
+import '../../services/app_events.dart';
+import '../../utils/error_handler/error_handler.dart';
+import '../../utils/functions.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../entities/OfferResponseModel.dart';
+import '../../entities/offer_response_model.dart';
 
-class ProductDetailsLogic extends GetxController {
+class ProductDetailsLogic extends GetxController  with WidgetsBindingObserver {
   @override
   void onInit() {
     super.onInit();
@@ -30,6 +31,32 @@ class ProductDetailsLogic extends GetxController {
       isEmpty = emailController.text.isEmpty;
       update(['isEmpty']);
     });
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance?.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async{
+    switch(state){
+
+      case AppLifecycleState.resumed:
+        break;
+      case AppLifecycleState.inactive:
+        FocusScopeNode currentFocus = FocusScope.of(Get.context!);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+        break;
+      case AppLifecycleState.paused:
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   final ApiRequests _apiRequests = Get.find();
@@ -76,12 +103,35 @@ class ProductDetailsLogic extends GetxController {
   }
 
   increaseQuantity() {
+    if (quantityController.text.isEmpty) {
+      quantityController.text = '0';
+    }
     int quantity = int.parse(quantityController.text);
-    if (productModel?.purchaseRestrictions?.maxQuantityPerCart != null) {
-      if (quantity == productModel?.purchaseRestrictions?.maxQuantityPerCart) {
-        return;
+
+    var maxQuantityPerCart = productModel?.purchaseRestrictions?.maxQuantityPerCart;
+    var productQuantity = productModel?.quantity;
+    if(maxQuantityPerCart != null && productQuantity !=null){
+      if(productQuantity < maxQuantityPerCart){
+        if (quantity >= productQuantity) {
+          return;
+        }
+      }else{
+        if (quantity >= maxQuantityPerCart) {
+          return;
+        }
       }
     }
+    if (maxQuantityPerCart != null) {
+      if (quantity >= maxQuantityPerCart) {
+        return;
+      }
+    } else if (productQuantity!= null) {
+      if (quantity >= productQuantity) return;
+    }else if(quantity > 9999) {
+      quantityController.text = '9999';
+    }
+
+
     quantity++;
     quantityController.text = quantity.toString();
     quantityController.selection = TextSelection.fromPosition(
@@ -112,7 +162,7 @@ class ProductDetailsLogic extends GetxController {
 
   void changeSelectedImage(int index) {
     selectedImageIndex = index;
-    update();
+    update(['images']);
   }
 
   goToImages(List<Images>? images) {
@@ -126,16 +176,12 @@ class ProductDetailsLogic extends GetxController {
   double lastDif = 0;
   double lastSaleDif = 0;
 
-  void onChange(
-    String? newValue,
-    Options? option,
-  ) {
+  void onChange(String? newValue, Options? option, {bool withUpdate = false}) {
     mapOptions[option?.name] = newValue;
-    update([option?.name ?? '']);
+    if (withUpdate) update([option?.name ?? '']);
     if (productModel?.options == null) return;
     if (mapOptions.length != productModel?.options?.length) return;
     String? productId = getProductId();
-    log(productId.toString());
     productModel?.variants?.forEach((element) {
       if (element.id == productId) {
         //productModel?.name = element.name;
@@ -143,20 +189,28 @@ class ProductDetailsLogic extends GetxController {
         priceTotal = element.price + priceCustom;
         salePriceTotal = element.salePrice + salePriceCustom;
 
-        formattedPrice = '$priceTotal ${productModel?.currency}';
-        formattedSalePrice = '$salePriceTotal ${productModel?.currency}';
+        formattedPrice = '${priceTotal.toStringAsFixed(2)} ${productModel?.currency}';
+        formattedSalePrice = '${salePriceTotal.toStringAsFixed(2)} ${productModel?.currency}';
         // productModel?.htmlUrl = element.htmlUrl;
         productModel?.sku = element.sku;
+        productModel?.quantity = element.quantity;
+        productModel?.purchaseRestrictions?.maxQuantityPerCart =
+            element.purchaseRestrictions?.maxQuantityPerCart;
+        productModel?.purchaseRestrictions?.minQuantityPerCart =
+            element.purchaseRestrictions?.minQuantityPerCart;
         //  productModel?.quantity = element.quantity;
-        //   productModel?.images = element.images;
-        update(['price']);
-        update();
+        productModel?.images = [];
+        productModel?.images?.addAll(element.images ?? []);
+        if (AppConfig.isSoreUseNewTheme || element.images?.isEmpty == true)
+          productModel?.images?.addAll(productModel?.originalImages ?? []);
+        quantityController.text = '1';
+        if (withUpdate) update(['price', 'notify', productModel?.id ?? '']);
+        if (withUpdate) update();
       }
     });
   }
 
   String? getProductId() {
-    log(mapOptions.toString());
     if (productModel == null) return null;
     if (productModel?.hasOptions == false) return productModel?.id;
     String? productId;
@@ -165,9 +219,6 @@ class ProductDetailsLogic extends GetxController {
         var product = [];
         mapOptions.forEach((key, value) {
           variant.attributes?.forEach((attributes) {
-            // log(attributes.name.toString() + key.toString());
-            //log(attributes.value.toString() + value.toString());
-            //     log(mapOptions.toString() + " -- " +  attributes.name.toString() + " -- " +  attributes.value!.ar.toString());
             if (attributes.name == key && attributes.value == value) {
               product.add(true);
             } else {
@@ -229,8 +280,6 @@ class ProductDetailsLogic extends GetxController {
       });
     });
 
-    log(json.encode(mapCheckboxChoices));
-
     productModel?.customOptionFields?.forEach((customOption) {
       mapCheckboxChoices.forEach((key, value) {
         if (key == customOption.id) {
@@ -288,8 +337,8 @@ class ProductDetailsLogic extends GetxController {
       salePriceCustom += customPrice;
     }
 
-    formattedPrice = '$priceTotal ${productModel?.currency}';
-    formattedSalePrice = '$salePriceTotal ${productModel?.currency}';
+    formattedPrice = '${priceTotal.toStringAsFixed(2)} ${productModel?.currency}';
+    formattedSalePrice = '${salePriceTotal.toStringAsFixed(2)} ${productModel?.currency}';
     mapDropDownChoices[id] = value.toString();
     update(['price', id]);
   }
@@ -302,16 +351,16 @@ class ProductDetailsLogic extends GetxController {
       salePriceCustom += customPrice;
       priceTotal = priceTotal + customPrice;
       salePriceTotal = salePriceTotal + customPrice;
-      formattedPrice = '$priceTotal ${productModel?.currency}';
-      formattedSalePrice = '$salePriceTotal ${productModel?.currency}';
+      formattedPrice = '${priceTotal.toStringAsFixed(2)} ${productModel?.currency}';
+      formattedSalePrice = '${salePriceTotal.toStringAsFixed(2)} ${productModel?.currency}';
     } else {
       priceCustom -= customPrice;
       salePriceCustom -= customPrice;
 
       priceTotal = priceTotal - customPrice;
       salePriceTotal = salePriceTotal - customPrice;
-      formattedPrice = '$priceTotal ${productModel?.currency}';
-      formattedSalePrice = '$salePriceTotal ${productModel?.currency}';
+      formattedPrice = '${priceTotal.toStringAsFixed(2)} ${productModel?.currency}';
+      formattedSalePrice = '${salePriceTotal.toStringAsFixed(2)} ${productModel?.currency}';
     }
     mapCheckboxChoicesItem[choicesId] = value ?? false;
     mapCheckboxChoices[id] = mapCheckboxChoicesItem;
@@ -320,17 +369,21 @@ class ProductDetailsLogic extends GetxController {
 
   getDescription({required bool all}) {
     if (!all) {
-      log('500');
       if ((productModel?.description?.length ?? 0) > 300) {
+        if((productModel?.description?.length ?? 0) < 350) {
+         getDescription(all: true);
+        }
         description = productModel?.description?.substring(0, 300) ?? '';
       } else {
-        description = productModel?.description ?? '';
+        description = productModel?.description ?? ' ';
       }
     } else {
-      log('all');
-      description = productModel?.description ?? '';
+      description = productModel?.description ?? ' ';
     }
 
+    if (description!.lastChars(1) == '<' || description!.lastChars(1) == '>') {
+      description = description?.substring(0, description!.length - 1);
+    }
     clickOnMore = !clickOnMore;
     update(['description']);
   }
@@ -344,9 +397,15 @@ class ProductDetailsLogic extends GetxController {
 
     try {
       var response = await _apiRequests.getProductDetails(productId);
+    // log(json.encode(response.data));
       productModel = ProductDetailsModel.fromJson(response.data);
 
-      var res = await _apiRequests.getSimpleBundleOffer([productId]);
+      List<String> productRelatedIds  = [];
+      productRelatedIds.add(productId);
+      productModel?.relatedProducts?.forEach((element) {
+        productRelatedIds.add(element.id ?? '');
+      });
+      var res = await _apiRequests.getSimpleBundleOffer(productRelatedIds);
       List<OfferResponseModel> offerList = (res.data['payload'] as List)
           .map((e) => OfferResponseModel.fromJson(e))
           .toList();
@@ -355,6 +414,13 @@ class ProductDetailsLogic extends GetxController {
         if (elementOffer.productIds?.contains(productId) == true) {
           productModel?.offerLabel = elementOffer.name;
         }
+
+        productModel?.relatedProducts?.forEach((element) {
+          if(elementOffer.productIds?.contains(element.id) == true){
+            element.offerLabel = elementOffer.name;
+          }
+        });
+
       });
       priceCustom = 0;
       salePriceCustom = 0;
@@ -362,8 +428,8 @@ class ProductDetailsLogic extends GetxController {
       salePriceOriginal = productModel!.salePrice;
       priceTotal = productModel!.price;
       salePriceTotal = productModel!.salePrice;
-      formattedPrice = '$priceTotal ${productModel?.currency}';
-      formattedSalePrice = '$salePriceTotal ${productModel?.currency}';
+      formattedPrice = '${priceTotal.toStringAsFixed(2)} ${productModel?.currency}';
+      formattedSalePrice = '${salePriceTotal.toStringAsFixed(2)} ${productModel?.currency}';
       update(['price']);
 
       _appEvents.logOpenProduct(
@@ -371,6 +437,11 @@ class ProductDetailsLogic extends GetxController {
           price: productModel?.formattedPrice,
           productId: productId);
 
+      productModel?.options?.forEach((element) {
+        if (element.choices?.isNotEmpty == true) {
+          onChange(element.choices?.first, element, withUpdate: false);
+        }
+      });
       getDescription(all: false);
     } catch (e) {
       try {
@@ -446,7 +517,6 @@ class ProductDetailsLogic extends GetxController {
         path = [];
         path.add(res.data['payload']['path']);
         path.add(res.data['payload']['temporary_url']);
-        log(res.data.toString());
       } catch (e) {
         ErrorHandler.handleError(e);
       }
@@ -460,8 +530,6 @@ class ProductDetailsLogic extends GetxController {
       TextEditingController? mapTextEditController, double customPrice) {
     bool priceAdded = false;
     mapTextEditController?.addListener(() {
-      log(priceAdded.toString());
-      log(mapTextEditController.text.toString());
       if (mapTextEditController.text != '' && !priceAdded) {
         priceAdded = true;
 
@@ -471,8 +539,8 @@ class ProductDetailsLogic extends GetxController {
         priceTotal = priceTotal + customPrice;
         salePriceTotal = salePriceTotal + customPrice;
 
-        formattedPrice = '$priceTotal ${productModel?.currency}';
-        formattedSalePrice = '$salePriceTotal ${productModel?.currency}';
+        formattedPrice = '${priceTotal.toStringAsFixed(2)} ${productModel?.currency}';
+        formattedSalePrice = '${salePriceTotal.toStringAsFixed(2)} ${productModel?.currency}';
         update(['price']);
       } else if (mapTextEditController.text == '' && priceAdded) {
         priceAdded = false;
@@ -483,8 +551,8 @@ class ProductDetailsLogic extends GetxController {
         priceTotal = priceTotal - customPrice;
         salePriceTotal = salePriceTotal - customPrice;
 
-        formattedPrice = '$priceTotal ${productModel?.currency}';
-        formattedSalePrice = '$salePriceTotal ${productModel?.currency}';
+        formattedPrice = '${priceTotal.toStringAsFixed(2)} ${productModel?.currency}';
+        formattedSalePrice = '${salePriceTotal.toStringAsFixed(2)} ${productModel?.currency}';
         update(['price']);
       }
     });

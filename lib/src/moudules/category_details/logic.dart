@@ -1,15 +1,11 @@
-import 'dart:developer';
-import 'dart:io';
-
-import 'package:dio/dio.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/OfferResponseModel.dart';
-import 'package:entaj/src/entities/category_model.dart';
-import 'package:entaj/src/entities/product_details_model.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/moudules/dialog/filter_dialog.dart';
-import 'package:entaj/src/moudules/search/view.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../data/remote/api_requests.dart';
+import '../../entities/offer_response_model.dart';
+import '../../entities/category_model.dart';
+import '../../entities/product_details_model.dart';
+import '../_main/logic.dart';
+import '../dialog/filter_dialog.dart';
+import '../search/view.dart';
+import '../../utils/error_handler/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,11 +17,12 @@ class CategoryDetailsLogic extends GetxController {
   bool isUnderLoading = false;
   bool filter = false;
   CategoryModel? categoryModel;
-  List<String> categoryIds = [];
+  String categoryId = '';
   String? filterUrl;
   String? next;
   int mPage = 1;
   List<String> sortList = [
+    'Default'.tr,
     'Newest'.tr,
     'Most Popular'.tr,
     'Low to High'.tr,
@@ -36,13 +33,12 @@ class CategoryDetailsLogic extends GetxController {
   TextEditingController startPriceController = TextEditingController();
   TextEditingController endPriceController = TextEditingController();
   RangeValues rangeValues = const RangeValues(0, 1);
+  List<CategoryModel> subCategories = [];
 
   @override
   void onInit() {
     super.onInit();
-
   }
-
 
   void openFilterDialog() {
     Get.dialog(const FilterDialog());
@@ -70,28 +66,29 @@ class CategoryDetailsLogic extends GetxController {
   getCategoryDetails(String categoryId) async {
     categoryModel = null;
     isCategoryLoading = true;
-    update([categoryIds]);
+    update([categoryId]);
     try {
       var response = await _apiRequests.getCategoryDetails(categoryId);
       categoryModel = CategoryModel.fromJson(response.data['payload']);
+      subCategories = categoryModel?.subCategories ?? [];
     } catch (e) {
       //  ErrorHandler.handleError(e);
     }
     isCategoryLoading = false;
-    update([categoryIds]);
+    update([categoryId]);
   }
 
-  getProductsList({int page = 1 ,required bool forPagination}) async {
+  getProductsList({int page = 1, required bool forPagination}) async {
     // productsList = [];
     hasInternet = true;
     if (productsList.isEmpty) isProductsLoading = true;
     if (forPagination && productsList.isNotEmpty) isUnderLoading = true;
     try {
-      update([categoryIds, 'products']);
-    }catch(e){}
+      update([categoryId, 'products']);
+    } catch (e) {}
     try {
       var response = await _apiRequests.getProductsList(
-          categoryList: categoryIds,
+          categoryList: filterUrl != null ? null : [categoryId],
           page: page,
           sale_price__isnull: filterUrl?.contains('sales'),
           ordering: getOrdering(),
@@ -117,40 +114,33 @@ class CategoryDetailsLogic extends GetxController {
 
       productsList.forEach((elementProduct) {
         offerList.forEach((elementOffer) {
-          if(elementOffer.productIds?.contains(elementProduct.id) == true){
+          if (elementOffer.productIds?.contains(elementProduct.id) == true) {
             elementProduct.offerLabel = elementOffer.name;
           }
         });
       });
-
-/*
-      productsList.forEach((element) {
-        if (element.price > endPrice) {
-          endPrice = element.price;
-        }
-        if (element.price < startPrice) {
-          startPrice = element.price;
-        }
-      });*/
     } catch (e) {
       hasInternet = await ErrorHandler.handleError(e);
     }
     isProductsLoading = false;
     isUnderLoading = false;
-    update([categoryIds ,'products']);
+    update([categoryId, 'products']);
   }
 
   String? getOrdering() {
     if (selectedSort == sortList[0]) {
-      return 'created_at';
+      return null;
     }
     if (selectedSort == sortList[1]) {
-      return 'popularity_order';
+      return 'created_at';
     }
     if (selectedSort == sortList[2]) {
-      return 'price';
+      return 'popularity_order';
     }
     if (selectedSort == sortList[3]) {
+      return 'price';
+    }
+    if (selectedSort == sortList[4]) {
       return '-price';
     }
     return null;
@@ -164,6 +154,8 @@ class CategoryDetailsLogic extends GetxController {
 
   restPrice() {
     filter = false;
+    startPriceController.text = '';
+    endPriceController.text = '';
     rangeValues = const RangeValues(0, 1);
     clearAndFetch();
     update(['dialog']);

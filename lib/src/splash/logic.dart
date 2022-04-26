@@ -43,9 +43,9 @@ class SplashLogic extends GetxController {
       }
       seconds--;
 
-      accessToken = remoteConfig.getString('ACCESS_TOKEN');
+      accessToken = remoteConfig.getString('ACCESS_TOKEN1');
       await _prefManger.setAccessToken(accessToken);
-      authorizationToken = remoteConfig.getString('AUTHORIZATION_TOKEN');
+      authorizationToken = remoteConfig.getString('AUTHORIZATION_TOKEN1');
       await _prefManger.setAuthorizationToken(authorizationToken);
       await _prefManger.setIsFromRemote(true);
 
@@ -56,10 +56,9 @@ class SplashLogic extends GetxController {
         return;
       }
     }
+    await _mainLogic.getStoreSetting();
     _mainLogic.getPages(false);
     _mainLogic.getCategories();
-    _mainLogic.getStoreSetting();
-    _mainLogic.getHomeScreen();
     await getSession();
     seconds--;
     await Future.delayed(Duration(seconds: seconds < 0 ? 0 : seconds));

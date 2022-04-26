@@ -1,6 +1,5 @@
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../colors.dart';
@@ -102,14 +101,16 @@ class DeliveryOptionPage extends StatelessWidget {
                                 Column(
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15),
                                   child: Column(
                                     children: [
                                       const SizedBox(
                                         height: 10,
                                       ),
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Image.asset(
                                             iconCarDelivery,
@@ -125,11 +126,12 @@ class DeliveryOptionPage extends StatelessWidget {
                                               CustomText(
                                                 "خيارات الشحن".tr,
                                                 fontWeight: FontWeight.bold,
-                                                color: greenColor,
+                                                color: secondaryColor,
                                                 fontSize: 10,
                                               ),
                                               CustomText(
-                                                logic.listShippingMethods[index].name,
+                                                logic.listShippingMethods[index]
+                                                    .name,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                               ),
@@ -141,7 +143,8 @@ class DeliveryOptionPage extends StatelessWidget {
                                         height: 10,
                                       ),
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Image.asset(
                                             iconCities,
@@ -158,11 +161,12 @@ class DeliveryOptionPage extends StatelessWidget {
                                                 CustomText(
                                                   "المدن التي يتم تغطيتها".tr,
                                                   fontWeight: FontWeight.bold,
-                                                  color: greenColor,
+                                                  color: secondaryColor,
                                                   fontSize: 10,
                                                 ),
                                                 CustomText(
-                                                  logic.getSelectedCities(index),
+                                                  logic
+                                                      .getSelectedCities(index),
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14,
                                                 ),
@@ -190,11 +194,12 @@ class DeliveryOptionPage extends StatelessWidget {
                                               CustomText(
                                                 "تكلفة الشحن".tr,
                                                 fontWeight: FontWeight.bold,
-                                                color: greenColor,
+                                                color: secondaryColor,
                                                 fontSize: 10,
                                               ),
                                               CustomText(
-                                                logic.listShippingMethods[index].costString,
+                                                logic.listShippingMethods[index]
+                                                    .costString,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 14,
                                               ),
@@ -203,23 +208,29 @@ class DeliveryOptionPage extends StatelessWidget {
                                           const SizedBox(
                                             width: 20,
                                           ),
-                                         if(logic.listShippingMethods[index].codEnabled == true) Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              CustomText(
-                                                "الدفع عند الإستلام".tr,
-                                                fontWeight: FontWeight.bold,
-                                                color: greenColor,
-                                                fontSize: 10,
-                                              ),
-                                              CustomText(
-                                                logic.listShippingMethods[index].codFeeString,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14,
-                                              ),
-                                            ],
-                                          )
+                                          if (logic.listShippingMethods[index]
+                                                  .codEnabled ==
+                                              true)
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                CustomText(
+                                                  "الدفع عند الإستلام".tr,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: secondaryColor,
+                                                  fontSize: 10,
+                                                ),
+                                                CustomText(
+                                                  logic
+                                                      .listShippingMethods[
+                                                          index]
+                                                      .codFeeString,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                ),
+                                              ],
+                                            )
                                         ],
                                       ),
                                       const SizedBox(

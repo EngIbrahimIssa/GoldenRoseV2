@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:entaj/src/app_config.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:get/get.dart' as ge;
 import 'package:image_picker/image_picker.dart';
@@ -23,7 +22,7 @@ class ApiRequests extends ge.GetxController {
     log("INIT ==> ApiRequests");
     String session = await _prefManger.getSession();
     String authorizationToken = AUTHORIZATION_TOKEN;
-    String accessToken = X_MANGER_TOKEN;
+    String accessToken = ACCESS_TOKEN;
     String customerToken = await _prefManger.getToken();
     bool isFromRemote = await _prefManger.getIsFromRemote();
 
@@ -40,11 +39,11 @@ class ApiRequests extends ge.GetxController {
         try {
           await remoteConfig.fetchAndActivate();
         } catch (e) {}
-        accessToken = remoteConfig.getString('ACCESS_TOKEN');
+        accessToken = remoteConfig.getString('ACCESS_TOKEN1');
         await _prefManger.setAccessToken(accessToken);
       }
       if (authorizationToken == '') {
-        authorizationToken = remoteConfig.getString('AUTHORIZATION_TOKEN');
+        authorizationToken = remoteConfig.getString('AUTHORIZATION_TOKEN1');
         await _prefManger.setAuthorizationToken(authorizationToken);
       }
 
@@ -64,7 +63,8 @@ class ApiRequests extends ge.GetxController {
           'X-CUSTOMER-TOKEN': customerToken,
           'x-manager-token': accessToken,
           'CART-SESSION-ID': session,
-          'currency': HiveController.generalBox.get('currency'),
+          if (HiveController.generalBox.get('currency') != null)
+            'currency': HiveController.generalBox.get('currency'),
           'Accept-Language': isArabicLanguage ? 'ar' : 'en',
           'Authorization': 'Bearer $authorizationToken',
           'hide-header-footer': true
@@ -80,7 +80,8 @@ class ApiRequests extends ge.GetxController {
           'Accept': accept,
           'source': 'mobile_app',
           'ROLE': 'CUSTOMER',
-          'currency': HiveController.generalBox.get('currency'),
+          if (HiveController.generalBox.get('currency') != null)
+            'currency': HiveController.generalBox.get('currency'),
           'X-CUSTOMER-TOKEN': customerToken,
           'x-manager-token': accessToken,
           'CART-SESSION-ID': session,
@@ -105,7 +106,7 @@ class ApiRequests extends ge.GetxController {
     return await _dioV2.get("catalog/stores/$storeId/landing-page");
   }
 
-  Future<Response> getHomeScreenOldTheme() async {
+  Future<Response> getHomeScreenOldTheme(String? themeId) async {
     return await _dioV2.get(
         "catalog/stores/$storeId/storefront-themes/$themeId/files/layout?template=home.twig");
   }
@@ -121,6 +122,9 @@ class ApiRequests extends ge.GetxController {
 
   Future<Response> getPrivacyPolicy() async {
     return await _dioV2.get("catalog/stores/$storeId/privacy-policy");
+  }
+  Future<Response> getComplaintsAndSuggestions() async {
+    return await _dioV2.get("catalog/stores/$storeId/complaints-and-suggestions");
   }
 
   Future<Response> getRefundPolicy() async {
@@ -138,6 +142,15 @@ class ApiRequests extends ge.GetxController {
 
   Future<Response> getPagesDetails({int? pageId}) async {
     return await _dioV2.get("catalog/stores/$storeId/pages/$pageId");
+  }
+
+  Future<Response> getPagesDetailsBySlug({String? slug}) async {
+    var url = "catalog/stores/$storeId/pages/slug/$slug";
+    log(url.toString());
+    return await _dioV2.get(url.toString());
+  }
+  Future<Response> getFaqs() async {
+    return await _dioV2.get("catalog/stores/$storeId/pages/faqs");
   }
 
   ///---------------------- Catalog -- Customer ----------------------///
@@ -178,6 +191,10 @@ class ApiRequests extends ge.GetxController {
         }));
   }
 
+  Future<Response> logout() async {
+    return await _dioV2.post("catalog/customers/logout'}");
+  }
+
   ///Profile
   Future<Response> getAccountDetails() async {
     await onInit();
@@ -207,6 +224,11 @@ class ApiRequests extends ge.GetxController {
   ///---------------------- Catalog -- Cart ----------------------///
   Future<Response> createSession() async {
     return await _dioV2.post("catalog/stores/$storeId/carts");
+  }
+
+  Future<Response> deleteSession() async {
+    await onInit();
+    return await _dioV2.delete("catalog/stores/$storeId/carts");
   }
 
   Future<Response> getCart() async {
@@ -285,6 +307,7 @@ class ApiRequests extends ge.GetxController {
   Future<Response> getProductReviews(
       {String? productId, int page = 1, int pageSize = 10}) async {
     var queryParameters = {'page': page, 'page_size': pageSize};
+    log(queryParameters.toString());
     return await _dioV2.get(
         "catalog/stores/$storeId/reviews/products/$productId",
         queryParameters: queryParameters);
@@ -307,7 +330,7 @@ class ApiRequests extends ge.GetxController {
       String? senderName}) async {
     String session = await _prefManger.getSession();
     String authorizationToken = AUTHORIZATION_TOKEN;
-    String accessToken = X_MANGER_TOKEN;
+    String accessToken = ACCESS_TOKEN;
     String customerToken = await _prefManger.getToken();
     bool isFromRemote = await _prefManger.getIsFromRemote();
 
@@ -339,7 +362,8 @@ class ApiRequests extends ge.GetxController {
       'Currency': currency,
       'ROLE': 'Manager',
       'Accept': accept,
-      'currency': HiveController.generalBox.get('currency'),
+      if (HiveController.generalBox.get('currency') != null)
+        'currency': HiveController.generalBox.get('currency'),
       'Content-Type': 'multipart/form-data',
       'X-CUSTOMER-TOKEN': customerToken,
       'x-manager-token': accessToken,
@@ -392,7 +416,7 @@ class ApiRequests extends ge.GetxController {
 
   Future<Response> getSimpleBundleOffer(List<String> productIds) async {
     int index = 0;
-    Map<String , dynamic> formData = {};
+    Map<String, dynamic> formData = {};
     productIds.forEach((element) {
       formData['product_ids[$index]'] = element;
       index++;

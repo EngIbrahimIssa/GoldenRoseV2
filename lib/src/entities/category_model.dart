@@ -1,4 +1,4 @@
-import 'package:entaj/src/utils/functions.dart';
+import '../utils/functions.dart';
 
 /// id : 67
 /// name : "Ila Carson"

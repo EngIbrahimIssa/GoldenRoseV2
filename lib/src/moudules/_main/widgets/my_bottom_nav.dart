@@ -1,4 +1,4 @@
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -35,9 +35,9 @@ class MyBottomNavigation extends StatelessWidget {
           elevation: 50,
           currentIndex: logic.navigatorValue,
           selectedLabelStyle:
-              TextStyle(fontSize: 14.sp, overflow: TextOverflow.ellipsis),
+              TextStyle(fontSize: 13.sp, overflow: TextOverflow.ellipsis),
           unselectedLabelStyle:
-              TextStyle(fontSize: 14.sp, overflow: TextOverflow.ellipsis),
+              TextStyle(fontSize: 13.sp, overflow: TextOverflow.ellipsis),
           onTap: (index) =>
               logic.changeSelectedValue(index, true, backCount: backCount),
           items: [

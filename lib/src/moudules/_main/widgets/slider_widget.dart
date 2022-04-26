@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:entaj/src/utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -21,9 +22,9 @@ import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 class SliderWidget extends StatefulWidget {
   List<Items> sliderItems;
   final bool hideDots;
+  String? textColor;
 
-  SliderWidget(
-      {required this.sliderItems, required this.hideDots, Key? key})
+  SliderWidget({required this.sliderItems, required this.hideDots, Key? key, required this.textColor})
       : super(key: key);
 
   @override
@@ -77,14 +78,16 @@ class _SliderWidgetState extends State<SliderWidget> {
               : GetBuilder<HomeLogic>(
                   init: Get.find<HomeLogic>(),
                   builder: (homeLogic) {
-                    if(!AppConfig.isSoreUseOldTheme) widget.sliderItems = logic.slider?.items ?? [];
+                    if (!AppConfig.isSoreUseNewTheme)
+                      widget.sliderItems = logic.slider?.items ?? [];
                     return !homeLogic.sliderDisplay
                         ? const SizedBox()
                         : Column(
                             children: [
+                              const SizedBox(height: 10,),
                               SizedBox(
                                 height:
-                                    AppConfig.isSoreUseOldTheme ? 180.h : 180.h,
+                                    AppConfig.isSoreUseNewTheme ? 180.h : 180.h,
                                 child: PageView.builder(
                                   onPageChanged: onPageChanged,
                                   itemCount: widget.sliderItems.length,
@@ -121,23 +124,55 @@ class _SliderWidgetState extends State<SliderWidget> {
                                     return GestureDetector(
                                       onTap: () =>
                                           goToLink(sliderItem.link ?? ''),
-                                      child: sliderItem.type != 'video'
-                                          ? CustomImage(
-                                              url: sliderItem.image ?? '',
-                                              width: double.infinity,
-                                              size: 80,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : sliderItem.link?.contains(
-                                                      'youtube.com') ==
-                                                  true
-                                              ? YoutubePlayerIFrame(
-                                                  controller:
-                                                      _youtubeController,
-                                                  gestureRecognizers: null
-                                                  //  showVideoProgressIndicator: true,
-                                                  )
-                                              : VideoPlayer(_controller),
+                                      child: Stack(
+                                        children: [
+                                          sliderItem.type != 'video'
+                                              ? CustomImage(
+                                                  url: sliderItem.image ?? '',
+                                                  width: double.infinity,
+                                                  size: 80,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : sliderItem.link?.contains(
+                                                          'youtube.com') ==
+                                                      true
+                                                  ? YoutubePlayerIFrame(
+                                                      controller:
+                                                          _youtubeController,
+                                                      gestureRecognizers: null
+                                                      //  showVideoProgressIndicator: true,
+                                                      )
+                                                  : VideoPlayer(_controller),
+                                          Positioned(
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            top:0,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                CustomText(
+                                                  sliderItem.title,
+                                                  textAlign: TextAlign.center,
+                                                  color: HexColor.fromHex(widget.textColor ?? '#000000'),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20,
+                                                ),
+                                                CustomText(
+                                                  sliderItem.des,
+                                                  textAlign: TextAlign.center,
+                                                  color: HexColor.fromHex(widget.textColor ?? '#000000'),
+                                                  fontSize: 18,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     );
                                   },
                                   controller: pageController,

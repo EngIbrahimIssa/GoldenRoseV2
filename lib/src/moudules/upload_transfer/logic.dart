@@ -1,9 +1,6 @@
-import 'dart:convert';
-import 'dart:developer';
-
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/bank_response_model.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../data/remote/api_requests.dart';
+import '../../entities/bank_response_model.dart';
+import '../../utils/error_handler/error_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';

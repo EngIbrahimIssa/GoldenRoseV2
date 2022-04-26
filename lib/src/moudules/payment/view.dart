@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:entaj/src/binding.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/data/shared_preferences/pref_manger.dart';
-import 'package:entaj/src/moudules/success_order/view.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../binding.dart';
+import '../../data/remote/api_requests.dart';
+import '../../data/shared_preferences/pref_manger.dart';
+import '../success_order/view.dart';
+import '../../utils/error_handler/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';

@@ -1,14 +1,14 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:entaj/src/entities/category_model.dart';
-import 'package:entaj/src/localization/ar.dart';
-import 'package:entaj/src/moudules/no_Internet_connection_screen.dart';
-import 'package:entaj/src/utils/custom_widget/custom_sized_box.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/item_widget/item_home_category.dart';
-import 'package:entaj/src/utils/item_widget/item_product.dart';
-import 'package:entaj/src/moudules/_main/widgets/my_bottom_nav.dart';
+import '../../app_config.dart';
+import '../../utils/item_widget/item_category.dart';
+import '../no_Internet_connection_screen.dart';
+import '../../utils/custom_widget/custom_sized_box.dart';
+import '../../utils/custom_widget/custom_text.dart';
+import '../../utils/item_widget/item_home_category.dart';
+import '../../utils/item_widget/item_product.dart';
+import '../_main/widgets/my_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -27,8 +27,11 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
   late ScrollController scrollController;
   late CategoryDetailsLogic logic;
 
+  late String categoryId;
+
   @override
   void initState() {
+    categoryId = Get.parameters['categoryId'] ?? '';
     super.initState();
   }
 
@@ -50,28 +53,24 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     logic = Get.put(CategoryDetailsLogic());
     scrollController = ScrollController();
-
     logic.startPriceController.text = '';
     logic.endPriceController.text = '';
     logic.filter = false;
-    // logic.isUnderLoading = false;
-    var categoryId = Get.parameters['categoryId'] ?? '';
+    logic.categoryId = categoryId;
     if (categoryId == 'arguments') {
       var argument = Get.arguments as Map;
       logic.filterUrl = argument['filter'];
     } else {
-      logic.categoryIds = [categoryId];
       logic.getCategoryDetails(categoryId);
     }
     logic.clearAndFetch();
     scrollController.addListener(_reviewsScrollListener);
     return GetBuilder<CategoryDetailsLogic>(
-        id: logic.categoryIds,
+        id: categoryId,
         autoRemove: false,
         builder: (logic) {
           return Scaffold(
@@ -98,26 +97,24 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                     onRefresh: () => logic.clearAndFetch(),
                     child: Container(
                       padding: EdgeInsets.fromLTRB(10.w, 10, 10.w, 0),
-                      child: logic.isCategoryLoading
+                      child: logic.isCategoryLoading && logic.isProductsLoading
                           ? const Center(child: CircularProgressIndicator())
-                          : Column(
-                              children: [
-                                buildCategories(logic),
-                                buildFilter(logic),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Expanded(
-                                  child: SingleChildScrollView(
-                                    controller: scrollController,
-                                    child: Column(
-                                      children: [
-                                        buildProducts(),
-                                      ],
-                                    ),
+                          : SingleChildScrollView(
+                              controller: scrollController,
+                              child: Column(
+                                children: [
+                                  buildCategories(logic),
+                                //  if (logic.productsList.isNotEmpty)
+                                    buildFilter(logic),
+                                  const SizedBox(
+                                    height: 10,
                                   ),
-                                ),
-                              ],
+                                  if ((AppConfig.showSubCategoriesAsGrid &&
+                                          logic.productsList.isNotEmpty) ||
+                                      (!AppConfig.showSubCategoriesAsGrid))
+                                    buildProducts(),
+                                ],
+                              ),
                             ),
                     ),
                   ),
@@ -127,7 +124,7 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
 
   GetBuilder<CategoryDetailsLogic> buildProducts() {
     return GetBuilder<CategoryDetailsLogic>(
-        id: "products",
+        id: categoryId,
         builder: (logic) {
           return Column(
             children: [
@@ -137,7 +134,8 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
                       ? SizedBox(
                           height: 500.h,
                           child: Center(
-                            child: CustomText('نعتذر، لا يوجد منتجات حالياً'.tr),
+                            child:
+                                CustomText('نعتذر، لا يوجد منتجات حالياً'.tr),
                           ),
                         )
                       : GridView.builder(
@@ -161,10 +159,8 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
               if (logic.isUnderLoading)
                 Container(
                   alignment: Alignment.center,
-                  margin: const EdgeInsets.only(
-                      bottom: 10),
-                  child:
-                  const CircularProgressIndicator(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: const CircularProgressIndicator(
                     strokeWidth: 2,
                   ),
                 ),
@@ -265,25 +261,58 @@ class _CategoryDetailsPageState extends State<CategoryDetailsPage> {
   }
 
   buildCategories(CategoryDetailsLogic logic) {
-    return SizedBox(
-      height: (logic.categoryModel?.subCategories?.length ?? 0) < 1 ? 0 : 58.h,
-      child: Column(
-        children: [
-          SizedBox(
-            height: 10.h,
-          ),
-          Expanded(
-            child: ListView.builder(
-                itemCount: logic.categoryModel?.subCategories?.length,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) => ItemHomeCategory(
-                    logic.categoryModel?.subCategories?[index])),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-        ],
-      ),
-    );
+    return GetBuilder<CategoryDetailsLogic>(
+        id: categoryId,
+        autoRemove: false,
+        // init: Get.find<CategoryDetailsLogic>(),
+        builder: (context) {
+          return logic.isProductsLoading
+              ? const SizedBox()
+              : (logic.subCategories.isNotEmpty)
+                  ? (AppConfig.showSubCategoriesAsGrid &&
+                          logic.productsList.isEmpty)
+                      ? GridView.builder(
+                          itemCount: logic.subCategories.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 8,
+                                  mainAxisSpacing: 8,
+                                  childAspectRatio: 1),
+                          itemBuilder: (context, index) =>
+                              ItemCategory(logic.subCategories[index], 100))
+                      : SizedBox(
+                          height: logic.subCategories.isEmpty
+                              ? 0
+                              : AppConfig.showSubCategoriesAsGrid
+                                  ? 170.h
+                                  : 58.h,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                    itemCount: logic.subCategories.length,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      return AppConfig.showSubCategoriesAsGrid
+                                          ? ItemCategory(
+                                              logic.subCategories[index], 120)
+                                          : ItemHomeCategory(
+                                              logic.subCategories[index]);
+                                    }),
+                              ),
+                              SizedBox(
+                                height: 10.h,
+                              ),
+                            ],
+                          ),
+                        )
+                  : const SizedBox();
+        });
   }
 }

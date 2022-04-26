@@ -1,5 +1,5 @@
-import 'package:entaj/src/entities/cart_model.dart';
-import 'package:entaj/src/entities/product_model.dart';
+import 'cart_model.dart';
+import 'product_model.dart';
 
 class OrderModel {
   int? id;

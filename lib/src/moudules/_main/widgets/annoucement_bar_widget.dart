@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -5,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../../app_config.dart';
 import '../../../colors.dart';
 import '../../../utils/custom_widget/custom_text.dart';
+import '../../../utils/functions.dart';
 import '../logic.dart';
 import '../tabs/home/logic.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,7 +20,7 @@ class AnnouncementBarWidget extends StatelessWidget {
     return GetBuilder<MainLogic>(
         init: Get.find<MainLogic>(),
         builder: (mainLogic) {
-          return (AppConfig.isSoreUseOldTheme
+          return (AppConfig.isSoreUseNewTheme
                   ? mainLogic.isHomeLoading
                   : mainLogic.isStoreSettingLoading)
               ? Shimmer.fromColors(
@@ -34,7 +37,9 @@ class AnnouncementBarWidget extends StatelessWidget {
                       id: 'announcementBar',
                       builder: (logic) {
                         logic.getAnnouncementBar();
-                        return (!logic.announcementBarDisplay)
+                        return (!logic.announcementBarDisplay ||
+                                logic.announcementBarText == null ||
+                                logic.announcementBarText == '')
                             ? const SizedBox()
                             : Container(
                                 padding: const EdgeInsets.all(20),
@@ -48,13 +53,18 @@ class AnnouncementBarWidget extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Expanded(
-                                        child: CustomText(
-                                      logic.announcementBarText,
-                                      fontWeight: FontWeight.bold,
-                                      color: HexColor.fromHex(logic
-                                              .announcementBarForegroundColor ??
-                                          Colors.black.toHex()),
-                                      fontSize: 11,
+                                        child: GestureDetector(
+                                      onTap: () =>
+                                          goToLink(logic.announcementBarLink),
+                                      child: CustomText(
+                                        logic.announcementBarText
+                                            ?.replaceAll('\n', ' '),
+                                        fontWeight: FontWeight.bold,
+                                        color: HexColor.fromHex(logic
+                                                .announcementBarForegroundColor ??
+                                            Colors.black.toHex()),
+                                        fontSize: 11,
+                                      ),
                                     )),
                                     GestureDetector(
                                       onTap: () => logic.hideAnnouncementBar(),

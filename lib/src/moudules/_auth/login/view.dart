@@ -1,11 +1,10 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/validation/validation.dart';
+import '../../../colors.dart';
+import '../../../images.dart';
+import '../../_main/logic.dart';
+import '../../../utils/custom_widget/custom_button_widget.dart';
+import '../../../utils/custom_widget/custom_text.dart';
+import '../../../utils/validation/validation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 

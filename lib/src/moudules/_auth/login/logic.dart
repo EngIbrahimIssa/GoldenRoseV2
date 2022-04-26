@@ -1,21 +1,33 @@
 import 'dart:developer';
 
-import 'package:entaj/src/app_config.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/success_api_response.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../../app_config.dart';
+import '../../../data/remote/api_requests.dart';
+import '../../../entities/success_api_response.dart';
+import '../../../utils/error_handler/error_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import '../otp/view.dart';
 import '../register/view.dart';
 
-class LoginLogic extends GetxController {
+class LoginLogic extends GetxController  with WidgetsBindingObserver{
   final ApiRequests _apiRequests = Get.find();
 
   final TextEditingController phoneController = TextEditingController();
   bool isEmail = false;
   bool isLoading = false;
   String? selectedCode;
+
+  @override
+  void onInit() async{
+    super.onInit();
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance?.removeObserver(this);
+  }
+
 
   changeCodeSelected(String? newCode) {
     selectedCode = newCode;

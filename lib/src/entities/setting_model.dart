@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:entaj/src/utils/functions.dart';
+import 'storefront_theme_model.dart';
+import '../utils/functions.dart';
 
 import '../../main.dart';
 import 'category_model.dart';
@@ -14,6 +15,7 @@ class SettingModel {
     header = json['header'] != null ? Header.fromJson(json['header']) : null;
     footer = json['footer'] != null ? Footer.fromJson(json['footer']) : null;
     settings = json['settings'] != null ? Settings.fromJson(json['settings']) : null;
+
   }
 
 }
@@ -52,13 +54,12 @@ class Settings {
   List<dynamic>? tamaraSupportedCurrencies;
   bool? isApplePayEnabled;
   Availability? availability;
-  dynamic? storefrontTheme;
+  StorefrontThemeModel? storefrontTheme;
   Theme? theme;
 
   Settings.fromJson(dynamic json) {
 
 
-    log(json['currencies'].toString());
     if (json['currencies'] != null) {
       currencies = [];
       json['currencies'].forEach((v) {
@@ -102,6 +103,8 @@ class Settings {
     vatSettings = json['vat_settings'] != null ? Vat_settings.fromJson(json['vat_settings']) : null;
     commercialRegistrationNumber = json['commercial_registration_number'];
     commercialRegistrationNumberActivation = json['commercial_registration_number_activation'];
+    storefrontTheme = StorefrontThemeModel.fromJson(json['storefront_theme']);
+  //  theme = json['theme'] != null ? Theme.fromJson(json['theme']) : null;
 /*
     isTamaraProductWidgetEnabled = json['is_tamara_product_widget_enabled'];
     if (json['tamara_supported_currencies'] != null) {
@@ -112,8 +115,6 @@ class Settings {
     }
     isApplePayEnabled = json['is_apple_pay_enabled'];
     availability = json['availability'] != null ? Availability.fromJson(json['availability']) : null;
-    storefrontTheme = json['storefront_theme'];
-    theme = json['theme'] != null ? Theme.fromJson(json['theme']) : null;
 */
   }
 
@@ -1040,17 +1041,17 @@ class Currency {
 }
 
 class Footer {
-  About_us? aboutUs;
+  AboutUs? aboutUs;
   Links? links;
-  Business_location? businessLocation;
-  Social_media? socialMedia;
+  BusinessLocation? businessLocation;
+  SocialMedia? socialMedia;
   List<PaymentMethods>? paymentMethods;
-  List<Shipping_methods>? shippingMethods;
+  List<ShippingMethods>? shippingMethods;
 
 
   Footer.fromJson(dynamic json) {
-    aboutUs = json['about_us'] != null ? About_us.fromJson(json['about_us']) : null;
-    socialMedia = json['social_media'] != null ? Social_media.fromJson(json['social_media']) : null;
+    aboutUs = json['about_us'] != null ? AboutUs.fromJson(json['about_us']) : null;
+    socialMedia = json['social_media'] != null ? SocialMedia.fromJson(json['social_media']) : null;
     if (json['payment_methods'] != null) {
       paymentMethods = [];
       json['payment_methods'].forEach((v) {
@@ -1061,7 +1062,7 @@ class Footer {
     if (json['shipping_methods'] != null) {
       shippingMethods = [];
       json['shipping_methods'].forEach((v) {
-        shippingMethods?.add(Shipping_methods.fromJson(v));
+        shippingMethods?.add(ShippingMethods.fromJson(v));
       });
     }
 /*
@@ -1078,15 +1079,15 @@ class Footer {
 
 }
 
-class Shipping_methods {
+class ShippingMethods {
   String? name;
   String? icon;
 
-  Shipping_methods({
+  ShippingMethods({
       this.name, 
       this.icon});
 
-  Shipping_methods.fromJson(dynamic json) {
+  ShippingMethods.fromJson(dynamic json) {
     name = json['name'];
     icon = json['icon'];
   }
@@ -1111,11 +1112,11 @@ class PaymentMethods {
 
 }
 
-class Social_media {
+class SocialMedia {
   String? title;
   Items? items;
 
-  Social_media.fromJson(dynamic json) {
+  SocialMedia.fromJson(dynamic json) {
     title = json['title'];
     items = json['items'] != null ? Items.fromJson(json['items']) : null;
   }
@@ -1158,7 +1159,7 @@ class Items {
 
 }
 
-class Business_location {
+class BusinessLocation {
   Country? country;
   City? city;
   String? district;
@@ -1170,7 +1171,7 @@ class Business_location {
   String? lng;
   bool? showLocation;
 
-  Business_location.fromJson(dynamic json) {
+  BusinessLocation.fromJson(dynamic json) {
     country = json['country'] != null ? Country.fromJson(json['country']) : null;
     city = json['city'] != null ? City.fromJson(json['city']) : null;
     district = json['district'];
@@ -1232,12 +1233,12 @@ class Links {
 }
 
 
-class About_us {
+class AboutUs {
   bool? enabled;
   String? title;
   String? text;
 
-  About_us.fromJson(dynamic json) {
+  AboutUs.fromJson(dynamic json) {
     enabled = json['enabled'];
     title = json['title'];
     text = json['text'];

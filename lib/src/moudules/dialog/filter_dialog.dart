@@ -1,8 +1,10 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/moudules/category_details/logic.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_sized_box.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../data/hive/wishlist/hive_controller.dart';
+
+import '../../colors.dart';
+import '../category_details/logic.dart';
+import '../../utils/custom_widget/custom_button_widget.dart';
+import '../../utils/custom_widget/custom_sized_box.dart';
+import '../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -40,7 +42,7 @@ class FilterDialog extends StatelessWidget {
                             onTap: () => logic.restPrice(),
                             child: CustomText(
                               "إعادة ضبط".tr,
-                              color: greenColor,
+                              color: secondaryColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -66,6 +68,7 @@ class FilterDialog extends StatelessWidget {
                                     controller: logic.startPriceController,
                                     textAlign: TextAlign.center,
                                     maxLines: 1,
+
                                     textDirection: TextDirection.ltr,
                                     onChanged: (s) {
                                       logic.startPriceController.text =
@@ -83,10 +86,11 @@ class FilterDialog extends StatelessWidget {
                                     inputFormatters: const <TextInputFormatter>[
                                       // FilteringTextInputFormatter.digitsOnly,
                                     ],
-                                    decoration: const InputDecoration(
-                                        counter: SizedBox.shrink(),
+                                    decoration: InputDecoration(
+                                        counter: const SizedBox.shrink(),
+                                        hintText: HiveController.generalBox.get('currency') ?? 'SAR',
                                         contentPadding: EdgeInsets.zero,
-                                        border: OutlineInputBorder()),
+                                        border: const OutlineInputBorder()),
                                     style: TextStyle(fontSize: 16.sp),
                                   ),
                                 ],
@@ -122,10 +126,11 @@ class FilterDialog extends StatelessWidget {
                                     inputFormatters: const <TextInputFormatter>[
                                       // FilteringTextInputFormatter.digitsOnly,
                                     ],
-                                    decoration: const InputDecoration(
-                                        counter: SizedBox.shrink(),
+                                    decoration: InputDecoration(
+                                        counter: const SizedBox.shrink(),
+                                        hintText: HiveController.generalBox.get('currency') ?? 'SAR',
                                         contentPadding: EdgeInsets.zero,
-                                        border: OutlineInputBorder()),
+                                        border: const OutlineInputBorder()),
                                     style: TextStyle(fontSize: 16.sp),
                                   ),
                                 ],
@@ -182,7 +187,7 @@ class FilterDialog extends StatelessWidget {
                         title: "تصفية".tr,
                         onClick: () => logic.filterPrices(),
                         color: Colors.white,
-                        textColor: greenColor,
+                        textColor: secondaryColor,
                       ),
                     ),
                     const SizedBox(

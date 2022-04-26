@@ -2,19 +2,21 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/data/shared_preferences/pref_manger.dart';
-import 'package:entaj/src/entities/success_api_response.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../../data/remote/api_requests.dart';
+import '../../../data/shared_preferences/pref_manger.dart';
+import '../../../entities/success_api_response.dart';
+import '../../_main/tabs/cart/logic.dart';
+import '../../../utils/error_handler/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 
 import '../login/logic.dart';
 
-class OtpLogic extends GetxController {
+class OtpLogic extends GetxController  with WidgetsBindingObserver {
   final ApiRequests _apiRequests = Get.find();
   final PrefManger _prefManger = Get.find();
+  final CartLogic _cartLogic = Get.find();
   final TextEditingController otpController = TextEditingController();
   StreamController<ErrorAnimationType> errorController =
       StreamController<ErrorAnimationType>();
@@ -33,10 +35,39 @@ class OtpLogic extends GetxController {
   void onInit() {
     startCounter();
     super.onInit();
+    WidgetsBinding.instance?.addObserver(this);
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance?.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async{
+    switch(state){
+
+      case AppLifecycleState.resumed:
+        break;
+      case AppLifecycleState.inactive:
+        FocusScopeNode currentFocus = FocusScope.of(Get.context!);
+        if (!currentFocus.hasPrimaryFocus &&
+            currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+        break;
+      case AppLifecycleState.paused:
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
   }
   void confirmPhone() async {
     isLoading = true;
     update();
+
+    await getSession();
+
     try {
       log(isEmail.toString());
       var response = await _apiRequests.confirmAccount(otpController.text,
@@ -52,6 +83,7 @@ class OtpLogic extends GetxController {
       await _prefManger.setIsLogin(true);
       await _apiRequests.onInit();
 
+      _cartLogic.getCartItems(true);
       if(isForRegistration) Get.back();
       Get.back();
       Get.back();
@@ -70,6 +102,18 @@ class OtpLogic extends GetxController {
     update();
   }
 
+  Future<void> getSession() async {
+    if (await _prefManger.getSession() == '') {
+      try {
+        var response = await _apiRequests.createSession();
+        var session = response.data['payload']['cart_session_id'];
+        log("new session => $session");
+        await _prefManger.setSession(session);
+        await _apiRequests.onInit();
+      } catch (e) {
+        ErrorHandler.handleError(e);
+      }
+    }  }
   Future<void> resendCode() async {
     isResendLoading = true;
     update(['resend']);

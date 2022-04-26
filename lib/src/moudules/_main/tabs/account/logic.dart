@@ -1,20 +1,19 @@
 import 'dart:developer';
-import 'dart:io';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/data/shared_preferences/pref_manger.dart';
-import 'package:entaj/src/entities/user_model.dart';
-import 'package:entaj/src/moudules/about_us/view.dart';
-import 'package:entaj/src/moudules/delivery_option/view.dart';
-import 'package:entaj/src/moudules/edit_account/view.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/moudules/page_details/view.dart';
-import 'package:entaj/src/moudules/pages/view.dart';
-import 'package:entaj/src/moudules/select_country/view.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import 'package:entaj/src/moudules/faq/view.dart';
+
+import '../../../../data/remote/api_requests.dart';
+import '../../../../data/shared_preferences/pref_manger.dart';
+import '../../../../entities/user_model.dart';
+import '../../../about_us/view.dart';
+import '../../../delivery_option/view.dart';
+import '../../../edit_account/view.dart';
+import '../../logic.dart';
+import '../../../page_details/view.dart';
+import '../../../pages/view.dart';
+import '../../../select_country/view.dart';
+import '../../../../utils/error_handler/error_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -33,6 +32,7 @@ class AccountLogic extends GetxController {
   bool isLoading = false;
   bool isPrivacyLoading = false;
   bool isRefundLoading = false;
+  bool isLogoutLoading = false;
   UserModel? userModel;
 
   Future<void> checkLoginState() async {
@@ -52,12 +52,12 @@ class AccountLogic extends GetxController {
   }
 
   void goWishlistPage() {
- //   Get.to(LoginPage());
+    //   Get.to(LoginPage());
     Get.to(WishlistPage());
   }
 
   void goToAboutUsPage() async {
-    if(!await checkInternet()) return;
+    if (!await checkInternet()) return;
     Get.to(AboutUsPage());
   }
 
@@ -71,7 +71,7 @@ class AccountLogic extends GetxController {
     isArabicLanguage = !lang;
     Get.updateLocale(Locale(isArabicLanguage ? 'ar' : 'en'));
     await _apiRequests.onInit();
-    _mainLogic.getHomeScreen();
+    // _mainLogic.getHomeScreen();
     _mainLogic.getStoreSetting();
     _mainLogic.getCategories();
     _mainLogic.getPages(false);
@@ -93,11 +93,14 @@ class AccountLogic extends GetxController {
     update();
   }
 
-  logout() {
-    _prefManger.setIsLogin(false);
-    _prefManger.setToken(null);
+  logout() async {
+    await _prefManger.setIsLogin(false);
+    await _prefManger.setToken(null);
+    await _prefManger.setSession(null);
+    await _apiRequests.onInit();
+    ErrorHandler.generateSession(false, renewSession: true);
     isLogin = false;
-    _apiRequests.onInit();
+
     userModel = null;
     update();
   }
@@ -105,8 +108,7 @@ class AccountLogic extends GetxController {
   void goToWhatsApp() async {
     String whatsAppUrl = "";
 
-    String phoneNumber =
-        _mainLogic.settingModel?.footer?.socialMedia?.items?.phone ?? '';
+    String phoneNumber = _mainLogic.settingModel?.footer?.socialMedia?.items?.phone ?? '';
     String description = "Hello, From App".tr;
 
     whatsAppUrl = 'https://wa.me/+$phoneNumber?text=${Uri.parse(description)}';
@@ -143,24 +145,21 @@ class AccountLogic extends GetxController {
   }
 
   goToPhone() {
-      log(_mainLogic.settingModel?.footer?.socialMedia?.items?.phone ?? '');
-      launch("tel:${_mainLogic.settingModel?.footer?.socialMedia?.items?.phone}");
-    }
+    log(_mainLogic.settingModel?.footer?.socialMedia?.items?.phone ?? '');
+    launch("tel:${_mainLogic.settingModel?.footer?.socialMedia?.items?.phone}");
+  }
 
   goToEmail() {
     String? encodeQueryParameters(Map<String, String> params) {
       return params.entries
-          .map((e) =>
-              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+          .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
           .join('&');
     }
 
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
       path: _mainLogic.settingModel?.footer?.socialMedia?.items?.email,
-      query: encodeQueryParameters(<String, String>{
-        'subject': 'رسالة من تطبيق $appName'
-      }),
+      query: encodeQueryParameters(<String, String>{'subject': 'رسالة من تطبيق $appName'}),
     );
 
     log(_mainLogic.settingModel?.footer?.socialMedia?.items?.email ?? '');
@@ -177,26 +176,51 @@ class AccountLogic extends GetxController {
   }
 
   goToPrivacyPolicy() async {
-    if(!await checkInternet()) return;
-    Get.to(PageDetailsPage(null, 1));
+    if (!await checkInternet()) return;
+    Get.to(PageDetailsPage(
+      type: 1,
+      title: "سياسة الخصوصية والاستخدام".tr,
+      pageModel: _mainLogic.pageModelPrivacy,
+    ));
+  }
+
+  goToSuggestions() async {
+    if (!await checkInternet()) return;
+    Get.to(PageDetailsPage(
+      type: 6,
+      title: "الشكاوى والاقتراحات".tr,
+      pageModel: _mainLogic.pageModelSuggestions,
+    ));
   }
 
   getRefundPolicy() async {
-    if(!await checkInternet()) return;
-    Get.to(PageDetailsPage(null, 2));
+    if (!await checkInternet()) return;
+    Get.to(PageDetailsPage(
+      type: 2,
+      title: "سياسة الإستبدال والاسترجاع".tr,
+      pageModel: _mainLogic.pageModelRefund,
+    ));
   }
 
   shareApp() {
     Share.share(shareLink);
   }
 
-  goToTermsAndConditions()async {
-    if(!await checkInternet()) return;
-    Get.to(PageDetailsPage(null, 3));
+  goToTermsAndConditions() async {
+    if (!await checkInternet()) return;
+    Get.to(PageDetailsPage(
+      type: 3,
+      title: "الشروط والأحكام".tr,
+      pageModel: _mainLogic.pageModelTerms,
+    ));
   }
 
   goToCountries() {
     Get.to(SelectCountryPage());
   }
 
+  goToFaq() async {
+    if (!await checkInternet()) return;
+    Get.to(FaqPage());
+  }
 }

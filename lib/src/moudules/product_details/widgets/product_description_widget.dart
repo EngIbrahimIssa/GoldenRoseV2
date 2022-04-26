@@ -1,6 +1,6 @@
-import 'package:entaj/src/app_config.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/functions.dart';
+
+import '../../../app_config.dart';
+import '../../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
@@ -25,22 +25,30 @@ class ProductDescriptionWidget extends StatelessWidget {
               const SizedBox(
                 height: 5,
               ),
+              /*SizedBox(
+                height: 300,
+                child: InAppWebView(
+                  initialData:
+                  InAppWebViewInitialData(data: logic.description ?? ''),
+                ),
+              )*/
               HtmlWidget(
                 logic.description ?? '',
                 textStyle: const TextStyle(
-                  fontFamily: AppConfig.fontName
+                  fontFamily: AppConfig.fontName,
                 ),
+                buildAsync: true,
               ),
               const SizedBox(
                 height: 5,
               ),
-              if ((logic.productModel?.description?.length ?? 0) > 500)
+              if ((logic.productModel?.description?.length ?? 0) > 350)
                 GestureDetector(
                   onTap: () => logic.getDescription(all: logic.clickOnMore),
                   child: Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          border: Border.all(color: greenColor, width: 2)),
+                          border: Border.all(color: secondaryColor, width: 2)),
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,

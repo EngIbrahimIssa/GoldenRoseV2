@@ -1,19 +1,15 @@
 import 'dart:developer';
 
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/moudules/category_details/view.dart';
-import 'package:entaj/src/moudules/_main/widgets/my_drawer.dart';
-import 'package:entaj/src/utils/custom_widget/custom_image.dart';
-import 'package:entaj/src/utils/custom_widget/custom_sized_box.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/moudules/_main/widgets/my_bottom_nav.dart';
+import '../../images.dart';
+import 'widgets/my_drawer.dart';
+import '../../utils/custom_widget/custom_text.dart';
+import 'widgets/my_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:new_version/new_version.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import '../../../main.dart';
 import '../../colors.dart';
 import 'logic.dart';
 
@@ -36,24 +32,24 @@ class _MainPageState extends State<MainPage> {
     super.initState();
 
     OneSignal.shared.setNotificationOpenedHandler(
-            (OSNotificationOpenedResult notification) {
-          // Will be called whenever a notification is opened/button pressed.
-          setState(() {
-            subtitle = notification.notification.subtitle ?? '';
-            content = notification.notification.body ?? '';
-            data = notification.notification.additionalData?['data'];
-          });
-          log(subtitle);
-          log(content);
-          log(data);
-        });
+        (OSNotificationOpenedResult notification) {
+      // Will be called whenever a notification is opened/button pressed.
+      setState(() {
+        subtitle = notification.notification.subtitle ?? '';
+        content = notification.notification.body ?? '';
+        data = notification.notification.additionalData?['data'];
+      });
+      log(subtitle);
+      log(content);
+      log(data);
+    });
 
     OneSignal.shared.setNotificationWillShowInForegroundHandler(
-            (OSNotificationReceivedEvent event) {
-          // Will be called whenever a notification is received in foreground
-          // Display Notification, pass null param for not displaying the notification
-          event.complete(event.notification);
-        });
+        (OSNotificationReceivedEvent event) {
+      // Will be called whenever a notification is received in foreground
+      // Display Notification, pass null param for not displaying the notification
+      event.complete(event.notification);
+    });
 
     OneSignal.shared
         .setNotificationOpenedHandler((OSNotificationOpenedResult result) {});
@@ -70,13 +66,12 @@ class _MainPageState extends State<MainPage> {
     });
 
     OneSignal.shared.setEmailSubscriptionObserver(
-            (OSEmailSubscriptionStateChanges emailChanges) {
-          // Will be called whenever then user's email subscription changes
-          // (ie. OneSignal.setEmail(email) is called and the user gets registered
-        });
+        (OSEmailSubscriptionStateChanges emailChanges) {
+      // Will be called whenever then user's email subscription changes
+      // (ie. OneSignal.setEmail(email) is called and the user gets registered
+    });
     checkNewAppVersion();
   }
-
 
   void checkNewAppVersion() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
@@ -164,7 +159,11 @@ class _MainPageState extends State<MainPage> {
                       child: Image.asset(iconSearch,
                           scale: 2, color: headerForegroundColor)),
                 ],
-                title: Image.asset(iconLogoText, height: 40.h , color: headerLogoColor,))
+                title: Image.asset(
+                  iconLogoText,
+                  height: 40.h,
+                  color: headerLogoColor,
+                ))
             : null,
         body: logic.currentScreen,
         bottomNavigationBar: const MyBottomNavigation(

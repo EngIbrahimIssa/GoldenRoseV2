@@ -1,5 +1,4 @@
-import 'package:entaj/src/colors.dart';
-import 'package:flutter/cupertino.dart';
+import '../../colors.dart';
 import 'package:flutter/material.dart';
 
 class CustomProgressIndicator extends StatelessWidget {

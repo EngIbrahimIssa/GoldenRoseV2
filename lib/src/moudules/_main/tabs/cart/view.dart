@@ -1,15 +1,15 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/item_widget/item_cart.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../../../../main.dart';
 import '../../../../app_config.dart';
+import '../../../../colors.dart';
+import '../../../../images.dart';
 import '../../../../services/app_events.dart';
+import '../../../../utils/custom_widget/custom_button_widget.dart';
+import '../../../../utils/custom_widget/custom_text.dart';
+import '../../../../utils/item_widget/item_cart.dart';
 import 'logic.dart';
 
 class CartPage extends StatelessWidget {
@@ -28,7 +28,7 @@ class CartPage extends StatelessWidget {
       color: Colors.white,
       height: double.infinity,
       child: GetBuilder<CartLogic>(
-        id: 'cart',
+          id: 'cart',
           init: Get.find<CartLogic>(),
           builder: (logic) {
             return Column(
@@ -46,7 +46,10 @@ class CartPage extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 12, horizontal: 20),
-                      child: Image.asset(iconLogoText , color: headerLogoColor,),
+                      child: Image.asset(
+                        iconLogoText,
+                        color: headerLogoColor,
+                      ),
                     ),
                   ],
                 ),
@@ -130,9 +133,9 @@ class CartPage extends StatelessWidget {
                 ),
                 if (logic.cartModel?.totals?.isNotEmpty == true)
                   CustomText(
-                    logic.cartModel?.totals?.last.valueString,
+                    logic.getTotal(),
                     fontSize: 16,
-                    color: greenColor,
+                    color: secondaryColor,
                     fontWeight: FontWeight.bold,
                   )
               ],
@@ -149,13 +152,8 @@ class CartPage extends StatelessWidget {
                       title: "إتمام الدفع".tr,
                       loading: logic.checkoutLoading,
                       onClick: () => logic.generateCheckoutToken(),
-                      color: AppConfig.showButtonWithBorder
-                          ? Colors.white
-                          : greenLightColor,
-                      textColor: AppConfig.showButtonWithBorder
-                          ? primaryColor
-                          : Colors.white,
-                      widthBorder: AppConfig.showButtonWithBorder ? 1 : 0,
+                      color: buttonBackgroundCheckoutColor,
+                      textColor: buttonTextCheckoutColor,
                     );
                   }))
         ],
@@ -230,7 +228,7 @@ class CartPage extends StatelessWidget {
               ),
               CustomText(
                 logic.cartModel!.totals![index].valueString,
-                fontWeight: (index == logic.cartModel!.totals!.length - 1)
+                fontWeight: logic.cartModel!.totals![index].code == 'total'
                     ? FontWeight.bold
                     : FontWeight.normal,
               ),
@@ -259,14 +257,8 @@ class CartPage extends StatelessWidget {
               ? CustomButtonWidget(
                   title: "أضف كوبون".tr,
                   onClick: () => logic.clickToAddCoupon(),
-                  color: AppConfig.showButtonWithBorder
-                      ? Colors.white
-                      : greenLightColor,
-                  textColor: AppConfig.showButtonWithBorder
-                      ? primaryColor
-                      : Colors.white,
-                  widthBorder: AppConfig.showButtonWithBorder ? 1 : 0,
-                )
+                  color: buttonBackgroundCouponColor,
+                  textColor: buttonTextCouponColor )
               : Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.sp),
@@ -308,15 +300,16 @@ class CartPage extends StatelessWidget {
                                     title: "حذف".tr,
                                     onClick: () => logic.removeCoupon(),
                                     color: moveColor.withOpacity(0.35),
-                                    textColor: moveColor,
+                                    textColor: buttonTextCouponColor,
                                     loading: logic.isCouponLoading,
                                     textSize: 10,
                                   )
                                 : CustomButtonWidget(
                                     title: "تطبيق الكوبون".tr,
                                     onClick: () => logic.redeemCoupon(),
-                                    color: greenLightColor,
+                                    color: buttonBackgroundCouponColor,
                                     loading: logic.isCouponLoading,
+                                    textColor: buttonTextCouponColor,
                                     textSize: 10,
                                   ))
                       ],
@@ -422,10 +415,13 @@ class CartPage extends StatelessWidget {
                       const SizedBox(
                         width: 10,
                       ),
-                      CustomText(
-                        'تم تفعيل خصم تطبيق الجوال '.tr +
-                            '${logic.mobileDiscountResponseModel?.actions?.first.value}%',
-                        fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: CustomText(
+                          !isArabicLanguage
+                              ? 'The mobile app ${logic.mobileDiscountResponseModel?.actions?.first.value}% discount will be activated upon payment completion'
+                              : 'سيتم تفعيل خصم التطبيق ${logic.mobileDiscountResponseModel?.actions?.first.value}% عند اتمام الدفع',
+                          fontWeight: FontWeight.bold,
+                        ),
                       )
                     ],
                   ),

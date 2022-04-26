@@ -1,5 +1,5 @@
-import 'package:entaj/src/entities/home_screen_model.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../entities/home_screen_model.dart';
+import '../custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

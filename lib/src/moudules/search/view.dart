@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/item_widget/item_product.dart';
-import 'package:flutter/material.dart';
+import '../../colors.dart';
+import '../../images.dart';
+import '../../utils/custom_widget/custom_text.dart';
+import '../../utils/item_widget/item_product.dart';
+import "package:flutter/material.dart";
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
@@ -42,8 +42,9 @@ class SearchPage extends StatelessWidget {
     scrollController.addListener(_reviewsScrollListener);
 
     return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.grey.shade50,
         appBar: AppBar(
+          backgroundColor: Colors.grey.shade50,
           title: CustomText(
             "البحث".tr,
             fontSize: 16,

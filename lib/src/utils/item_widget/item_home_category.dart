@@ -1,7 +1,7 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/entities/category_model.dart';
-import 'package:entaj/src/moudules/category_details/view.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../colors.dart';
+import '../../entities/category_model.dart';
+import '../../moudules/category_details/view.dart';
+import '../custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,12 +22,12 @@ class ItemHomeCategory extends StatelessWidget {
         width: categoryModel == null ? 100 : null,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
         decoration: BoxDecoration(
-            color: categoryBackgroundColor,
+            color: categoryHomeBackgroundColor,
             borderRadius: BorderRadius.circular(20.sp)),
         child: Center(
             child: CustomText(
           categoryModel?.name,
-          color: categoryTextColor,
+          color: categoryHomeTextColor,
         )),
       ),
     );

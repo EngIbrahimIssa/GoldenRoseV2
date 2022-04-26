@@ -1,17 +1,16 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/moudules/order_details/logic.dart';
-import 'package:entaj/src/moudules/order_details/view.dart';
-import 'package:entaj/src/moudules/upload_transfer/view.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_sized_box.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../colors.dart';
+import '../_main/logic.dart';
+import '../order_details/logic.dart';
+import '../order_details/view.dart';
+import '../upload_transfer/view.dart';
+import '../../utils/custom_widget/custom_button_widget.dart';
+import '../../utils/custom_widget/custom_sized_box.dart';
+import '../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../main.dart';
 import '../../images.dart';
-import 'logic.dart';
 
 class SuccessOrderPage extends StatelessWidget {
   final String orderId;
@@ -64,7 +63,7 @@ class SuccessOrderPage extends StatelessWidget {
                                 Image.asset(
                                   iconBg,
                                   color: primaryColor,
-                                  scale: 5,
+                                  scale: 3,
                                 ),
                                 const CustomSizedBox(
                                   width: 25,

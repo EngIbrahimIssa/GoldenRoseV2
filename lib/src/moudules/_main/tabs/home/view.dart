@@ -1,31 +1,26 @@
 import 'dart:math';
 
-import 'package:entaj/main.dart';
-import 'package:entaj/src/app_config.dart';
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/entities/home_screen_model.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/moudules/_main/widgets/annoucement_bar_widget.dart';
-import 'package:entaj/src/moudules/_main/widgets/brand_widget.dart';
-import 'package:entaj/src/moudules/_main/widgets/categories_widget.dart';
-import 'package:entaj/src/moudules/_main/widgets/slider_widget.dart';
-import 'package:entaj/src/moudules/category_details/view.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/moudules/no_Internet_connection_screen.dart';
-import 'package:entaj/src/services/app_events.dart';
-import 'package:entaj/src/utils/custom_widget/custom_image.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/item_widget/item_home_category.dart';
-import 'package:entaj/src/utils/item_widget/item_product.dart';
-import 'package:entaj/src/utils/item_widget/item_testimonial.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import '../../../../../main.dart';
+import '../../../../app_config.dart';
+import '../../../../colors.dart';
+import '../../../../entities/home_screen_model.dart';
+import '../../../../images.dart';
+import '../../widgets/annoucement_bar_widget.dart';
+import '../../widgets/brand_widget.dart';
+import '../../widgets/categories_grid_widget.dart';
+import '../../widgets/categories_widget.dart';
+import '../../widgets/slider_widget.dart';
+import '../../logic.dart';
+import '../../../no_Internet_connection_screen.dart';
+import '../../../../services/app_events.dart';
+import '../../../../utils/custom_widget/custom_text.dart';
+import '../../../../utils/item_widget/item_product.dart';
+import '../../../../utils/item_widget/item_testimonial.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 
-import '../../../../utils/functions.dart';
-import '../../../../utils/item_widget/item_category.dart';
 import 'logic.dart';
 
 class HomePage extends StatelessWidget {
@@ -44,61 +39,108 @@ class HomePage extends StatelessWidget {
             child: SizedBox(
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                child: !logic.hasInternet ? const NoInternetConnectionScreen() : (AppConfig.isSoreUseOldTheme)
-                    ? GetBuilder<HomeLogic>(
-                        init: Get.find<HomeLogic>(),
-                        builder: (logic) {
-                          return Column(
-                            children: logic.getDisplayOrderModule(),
-                          );
-                        })
-                    : Column(
-                        children: [
-                          const AnnouncementBarWidget(),
-                          const CategoriesWidget(),
-                          GetBuilder<HomeLogic>(
-                              init: Get.find<HomeLogic>(),
-                              builder: (logic) {
-                                return SliderWidget(
-                                  sliderItems: logic.sliderItems,
-                                  hideDots: false,
-                                );
-                              }),
-                          buildDescription(),
-                          const SizedBox(
-                            height: 15,
+                child: !logic.hasInternet
+                    ? const NoInternetConnectionScreen()
+                    : (AppConfig.isSoreUseNewTheme)
+                        ? GetBuilder<HomeLogic>(
+                            init: Get.find<HomeLogic>(),
+                            builder: (logic) {
+                              return Column(
+                                children: logic.getDisplayOrderModule(),
+                              );
+                            })
+                        : Column(
+                            children: [
+                              const AnnouncementBarWidget(),
+                              const CategoriesWidget(),
+                              if (logic.homeScreenModel?.products != null)
+                                GridView.builder(
+                                  itemCount:
+                                      logic.homeScreenModel?.products?.length ??
+                                          0,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  padding: const EdgeInsets.only(bottom: 20),
+                                  gridDelegate:
+                                      const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: 8,
+                                          mainAxisSpacing: 8,
+                                          childAspectRatio: 0.65),
+                                  itemBuilder: (context, index) => ItemProduct(
+                                    logic.homeScreenModel?.products?[index],
+                                    index,
+                                    horizontal: false,
+                                    forWishlist: false,
+                                  ),
+                                ),
+                              if (logic.homeScreenModel?.products == null &&
+                                  logic.slider != null)
+                                GetBuilder<HomeLogic>(
+                                    init: Get.find<HomeLogic>(),
+                                    builder: (logic) {
+                                      return logic.sliderItems.isEmpty
+                                          ? SizedBox()
+                                          : SliderWidget(
+                                              sliderItems: logic.sliderItems,
+                                              textColor: null,
+                                              hideDots: false,
+                                            );
+                                    }),
+                              if (logic.homeScreenModel?.products == null)
+                                buildDescription(),
+                              if (logic.homeScreenModel?.products == null)
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                              if (logic.homeScreenModel?.products == null)
+                                GetBuilder<MainLogic>(builder: (logic) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      buildFeaturedProducts(logic
+                                          .homeScreenModel
+                                          ?.featuredProductsPromoted),
+                                      buildFeaturedProducts(logic
+                                          .homeScreenModel?.onSaleProducts),
+                                      buildFeaturedProducts(logic
+                                          .homeScreenModel?.featuredProducts),
+                                      buildFeaturedProducts(logic
+                                          .homeScreenModel?.featuredProducts2),
+                                      buildFeaturedProducts(logic
+                                          .homeScreenModel?.featuredProducts3),
+                                      buildFeaturedProducts(logic
+                                          .homeScreenModel?.featuredProducts4),
+                                      buildFeaturedProducts(logic
+                                          .homeScreenModel?.recentProducts),
+                                    ],
+                                  );
+                                }),
+                              if (logic.homeScreenModel?.products == null)
+                                CategoriesGridWidget(
+                                  title: logic.homeScreenModel
+                                      ?.featuredCategories?.title,
+                                  moreText: null,
+                                  categories: logic.homeScreenModel
+                                          ?.featuredCategories?.items ??
+                                      [],
+                                ),
+                              if (logic.homeScreenModel?.products == null)
+                                BrandWidget(
+                                    brands: logic.homeScreenModel?.brands),
+                              if (logic.homeScreenModel?.products == null)
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                              if (logic.homeScreenModel?.products == null)
+                                buildTestimonials(),
+                              if (logic.homeScreenModel?.products == null)
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                            ],
                           ),
-                          GetBuilder<MainLogic>(builder: (logic) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                buildFeaturedProducts(logic
-                                    .homeScreenModel?.featuredProductsPromoted),
-                                buildFeaturedProducts(
-                                    logic.homeScreenModel?.onSaleProducts),
-                                buildFeaturedProducts(
-                                    logic.homeScreenModel?.featuredProducts),
-                                buildFeaturedProducts(
-                                    logic.homeScreenModel?.featuredProducts2),
-                                buildFeaturedProducts(
-                                    logic.homeScreenModel?.featuredProducts3),
-                                buildFeaturedProducts(
-                                    logic.homeScreenModel?.featuredProducts4),
-                                buildFeaturedProducts(
-                                    logic.homeScreenModel?.recentProducts),
-                              ],
-                            );
-                          }),
-                          BrandWidget(brands: logic.homeScreenModel?.brands),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          buildTestimonials(),
-                          const SizedBox(
-                            height: 15,
-                          )
-                        ],
-                      ),
               ),
             ),
           );
@@ -125,29 +167,48 @@ class HomePage extends StatelessWidget {
           : logic.homeScreenModel?.storeDescription == null ||
                   logic.homeScreenModel?.storeDescription?.display == false ||
                   (logic.homeScreenModel?.storeDescription?.title == null &&
-                      logic.homeScreenModel?.storeDescription?.text == null)
+                      logic.homeScreenModel?.storeDescription?.text == null &&
+                      logic.homeScreenModel?.storeDescription
+                              ?.socialMediaIcons ==
+                          null)
               ? const SizedBox()
               : Container(
                   padding: const EdgeInsets.all(20),
                   margin: const EdgeInsets.only(left: 15, right: 15, top: 10),
                   decoration: BoxDecoration(
-                      color: Colors.grey.shade200,
+                      color: HexColor.fromHex(logic.homeScreenModel
+                              ?.storeDescription?.style?.backgroundColor ??
+                          '#dddddd'),
                       borderRadius: BorderRadius.circular(20.sp)),
                   width: double.infinity,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      CustomText(
-                        logic.homeScreenModel?.storeDescription?.title,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      CustomText(
-                        logic.homeScreenModel?.storeDescription?.text,
-                        fontSize: 10,
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
+                      if (logic.homeScreenModel?.storeDescription?.title !=
+                          null)
+                        CustomText(
+                          logic.homeScreenModel?.storeDescription?.title,
+                          fontWeight: FontWeight.bold,
+                          color: HexColor.fromHex(logic.homeScreenModel
+                                  ?.storeDescription?.style?.foregroundColor ??
+                              '#000000'),
+                          textAlign: TextAlign.center,
+                        ),
+                      if (logic.homeScreenModel?.storeDescription?.text != null)
+                        CustomText(
+                          logic.homeScreenModel?.storeDescription?.text,
+                          textAlign: TextAlign.center,
+                          color: HexColor.fromHex(logic.homeScreenModel
+                                  ?.storeDescription?.style?.foregroundColor ??
+                              '#000000'),
+                          fontSize: 10,
+                        ),
+                      if (logic.homeScreenModel?.storeDescription
+                              ?.showSocialMediaIcons ==
+                          true)
+                        const SizedBox(
+                          height: 5,
+                        ),
                       if (logic.homeScreenModel?.storeDescription
                               ?.showSocialMediaIcons ==
                           true)
@@ -163,7 +224,12 @@ class HomePage extends StatelessWidget {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Image.asset(
                                     iconTwitter,
-                                    color: primaryColor,
+                                    color: HexColor.fromHex(logic
+                                            .homeScreenModel
+                                            ?.storeDescription
+                                            ?.style
+                                            ?.foregroundColor ??
+                                        '#000000'),
                                     scale: 2,
                                   ),
                                 ),
@@ -177,7 +243,12 @@ class HomePage extends StatelessWidget {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Image.asset(
                                     iconSnapchat,
-                                    color: primaryColor,
+                                    color: HexColor.fromHex(logic
+                                            .homeScreenModel
+                                            ?.storeDescription
+                                            ?.style
+                                            ?.foregroundColor ??
+                                        '#000000'),
                                     scale: 2,
                                   ),
                                 ),
@@ -191,7 +262,12 @@ class HomePage extends StatelessWidget {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Image.asset(
                                     iconInstagram,
-                                    color: primaryColor,
+                                    color: HexColor.fromHex(logic
+                                            .homeScreenModel
+                                            ?.storeDescription
+                                            ?.style
+                                            ?.foregroundColor ??
+                                        '#000000'),
                                     scale: 2,
                                   ),
                                 ),
@@ -205,7 +281,12 @@ class HomePage extends StatelessWidget {
                                   padding: const EdgeInsets.all(8.0),
                                   child: Image.asset(
                                     iconFacebook,
-                                    color: primaryColor,
+                                    color: HexColor.fromHex(logic
+                                            .homeScreenModel
+                                            ?.storeDescription
+                                            ?.style
+                                            ?.foregroundColor ??
+                                        '#000000'),
                                     scale: 2,
                                   ),
                                 ),
@@ -234,6 +315,7 @@ class HomePage extends StatelessWidget {
                         CustomText(
                           featuredProducts?.title ?? '',
                           fontSize: 17,
+                          color: primaryColor,
                           fontWeight: FontWeight.w900,
                         ),
                         if (featuredProducts?.moreButton != null)

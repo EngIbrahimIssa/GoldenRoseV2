@@ -1,5 +1,6 @@
-import 'package:entaj/src/moudules/product_details/logic.dart';
-import 'package:entaj/src/utils/functions.dart';
+import '../../../app_config.dart';
+import '../../../utils/functions.dart';
+import '../logic.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -21,8 +22,12 @@ class ProductPrice extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // CustomText(logic.productModel!.salePrice.toString()),
-               // if (logic.salePriceTotal > 0.0 && logic.priceTotal > 0.0)
-               //   CustomText(calculateDiscount(salePriceTotal: logic.salePriceTotal, priceTotal: logic.priceTotal)),
+                if (logic.salePriceTotal > 0.0 &&
+                    logic.priceTotal > 0.0 &&
+                    AppConfig.showDiscountPercentage)
+                  CustomText(calculateDiscount(
+                      salePriceTotal: logic.salePriceTotal,
+                      priceTotal: logic.priceTotal)),
                 Row(
                   children: [
                     if (logic.productModel?.formattedSalePrice != null)
@@ -40,12 +45,36 @@ class ProductPrice extends StatelessWidget {
                       logic.salePriceTotal != 0
                           ? logic.formattedSalePrice
                           : logic.formattedPrice,
-                      color: greenColor,
+                      color: secondaryColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                     ),
                   ],
                 ),
+                if (logic.productModel?.weight?.value != null)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      CustomText(
+                        'الوزن'.tr,
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      CustomText(
+                        '${logic.productModel?.weight?.value} ${logic.productModel?.weight?.unit}',
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ],
+                  ),
               ],
             ),
           );

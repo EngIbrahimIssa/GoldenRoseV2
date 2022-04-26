@@ -1,7 +1,5 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../images.dart';
+import '../_main/logic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:get/get.dart';

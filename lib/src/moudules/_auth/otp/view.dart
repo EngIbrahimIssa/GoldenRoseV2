@@ -1,7 +1,7 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_sized_box.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../../colors.dart';
+import '../../../utils/custom_widget/custom_button_widget.dart';
+import '../../../utils/custom_widget/custom_sized_box.dart';
+import '../../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -96,13 +96,13 @@ class OtpPage extends StatelessWidget {
                                 controller: logic.otpController,
                                 onCompleted: (v) {},
                                 onChanged: (value) {
-                                  logic.otpController.text =
+                                  /*logic.otpController.text =
                                       replaceArabicNumber(value);
                                   logic.otpController.selection =
                                       TextSelection.fromPosition(TextPosition(
                                           offset:
                                           logic.otpController.text.length));
-                                  logic.errorText = "";
+                                  */logic.errorText = "";
                                   logic.isFull = value.length == 4;
                                   logic.update();
                                 },
@@ -167,7 +167,7 @@ class OtpPage extends StatelessWidget {
                                             children: [
                                               CustomText(
                                                 "لم يصلك الرمز؟ طلب مرة أخرى".tr,
-                                                color: logic.counter == 60 || logic.counter == 0 ? greenColor : Colors.grey,
+                                                color: logic.counter == 60 || logic.counter == 0 ? secondaryColor : Colors.grey,
                                                 fontWeight: FontWeight.bold,
                                               ),
                                              if(logic.counter != 0 && logic.counter!=60) CustomText(

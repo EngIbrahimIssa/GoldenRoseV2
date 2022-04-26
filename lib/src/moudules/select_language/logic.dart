@@ -1,14 +1,13 @@
 import 'dart:ui';
 
-import 'package:entaj/src/binding.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/data/shared_preferences/pref_manger.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/moudules/_main/view.dart';
+import '../../binding.dart';
+import '../../data/remote/api_requests.dart';
+import '../../data/shared_preferences/pref_manger.dart';
+import '../_main/logic.dart';
+import '../_main/view.dart';
 import 'package:get/get.dart';
 
 import '../../../main.dart';
-import '../../.env.dart';
 
 class SelectLanguageLogic extends GetxController {
   final PrefManger _prefManger = Get.find();
@@ -20,7 +19,7 @@ class SelectLanguageLogic extends GetxController {
     isArabicLanguage = mIsArabic;
     Get.updateLocale(Locale(isArabicLanguage ? 'ar' : 'en'));
     await _apiRequests.onInit();
-    _mainLogic.getHomeScreen();
+  //  _mainLogic.getHomeScreen();
     _mainLogic.getStoreSetting();
     _mainLogic.getCategories();
     _mainLogic.getPages(false);

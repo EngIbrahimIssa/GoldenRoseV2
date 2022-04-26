@@ -1,8 +1,8 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/data/shared_preferences/pref_manger.dart';
-import 'package:entaj/src/entities/order_model.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../../../colors.dart';
+import '../../../../data/remote/api_requests.dart';
+import '../../../../data/shared_preferences/pref_manger.dart';
+import '../../../../entities/order_model.dart';
+import '../../../../utils/error_handler/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -41,7 +41,7 @@ class OrdersLogic extends GetxController {
 
   Color getOrderStatusColor(OrderStatus? orderStatus) {
     if (orderStatus?.code == 'delivered') {
-      return greenColor;
+      return secondaryColor;
     }
     if (orderStatus?.code == 'preparing') {
       return Colors.orange;

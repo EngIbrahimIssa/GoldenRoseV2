@@ -31,6 +31,7 @@ class TestimonialWidget extends StatelessWidget {
                         child: CustomText(
                           logic.testimonials?.title ?? '',
                           fontSize: 17,
+                          color: primaryColor,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -60,6 +61,7 @@ class TestimonialWidget extends StatelessWidget {
                           child: CustomText(
                             title,
                             fontSize: 17,
+                            color: primaryColor,
                             fontWeight: FontWeight.w900,
                           ),
                         ),

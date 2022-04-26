@@ -1,16 +1,18 @@
-import 'package:entaj/src/entities/option_model.dart';
-import 'package:entaj/src/entities/reviews_model.dart';
+import 'package:entaj/src/entities/product_details_model.dart';
+
+import 'option_model.dart';
+import 'reviews_model.dart';
 
 import '../../main.dart';
 import 'category_model.dart';
 
 class ProductModel {
   String? id;
-  dynamic? parentId;
+  String? parentId;
   String? name;
   String? description;
   String? sku;
-  List<dynamic>? customFields;
+  List<CustomFields>? customFields;
   int? quantity;
   dynamic? weight;
   bool? isTaxable;
@@ -67,7 +69,7 @@ class ProductModel {
     if (json['custom_fields'] != null) {
       customFields = [];
       json['custom_fields'].forEach((v) {
-        customFields?.add((v));
+        customFields?.add(CustomFields.fromJson(v));
       });
     }
     if (json['custom_option_fields'] != null) {

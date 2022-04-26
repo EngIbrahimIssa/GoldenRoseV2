@@ -1,7 +1,7 @@
-import 'package:entaj/src/utils/functions.dart';
+import 'product_details_model.dart';
+import '../utils/functions.dart';
 
 import 'coupon_model.dart';
-import 'home_screen_model.dart';
 
 class CartModel {
   int? id;
@@ -87,7 +87,7 @@ class Products {
   String? productId;
   String? sku;
   String? name;
-  List<dynamic>? customFields;
+  List<CustomFields>? customFields;
   int? quantity;
   bool? isPublished;
   bool? isTaxable;
@@ -118,11 +118,12 @@ class Products {
   double? total;
   String? totalString;
   bool? isOriginalProductAvailable;
-  dynamic? originalProductQuantity;
+  int? originalProductQuantity;
   bool? isRequestedQuantityEnough;
   bool? isOriginalQuantityFinished;
   bool? isProductRelatedOptionUpdated;
   bool? isProductPriceUpdated;
+  PurchaseRestrictions? purchaseRestrictions;
   List<Images>? images;
 
 
@@ -132,13 +133,14 @@ class Products {
     productId = json['product_id'];
     sku = json['sku'];
     name = json['name'];
-   /* if (json['custom_fields'] != null) {
+    purchaseRestrictions =PurchaseRestrictions.fromJson( json['purchase_restrictions']);
+    if (json['custom_fields'] != null) {
       customFields = [];
       json['custom_fields'].forEach((v) {
-        customFields?.add(dynamic.fromJson(v));
+        customFields?.add(CustomFields.fromJson(v));
       });
     }
-   */ quantity = json['quantity'];
+    quantity = json['quantity'];
     isPublished = json['is_published'];
     isTaxable = json['is_taxable'];
     isDiscounted = json['is_discounted'];

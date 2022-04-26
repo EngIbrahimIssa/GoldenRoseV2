@@ -1,4 +1,4 @@
-import 'package:entaj/src/utils/functions.dart';
+import '../utils/functions.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
 
 class ReviewsModel {

@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:entaj/main.dart';
-import 'package:entaj/src/entities/product_details_model.dart';
+import '/main.dart';
+import '/src/entities/product_details_model.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,7 +37,7 @@ goToLink(String? link) async {
     }
   } else if (link.contains('products')) {
     try {
-      String productId = link.substring(10, link.length);
+      var productId = link.substring(link.indexOf('products') + 9, link.length);
       var url = Uri.encodeComponent(productId);
       Get.toNamed("/product-details/$url");
       return;
@@ -45,10 +45,11 @@ goToLink(String? link) async {
       return;
     }
   }
-  if (await canLaunch(link)) {
-    await launch(link);
+  var url = Uri.parse(link).toString();
+  if (await canLaunch(url)) {
+    await launch(url);
   } else {
-    log("can't launch $link");
+    log("can't launch $url");
     if (link.contains('categories')) {
       try {
         var categoryId = link.substring(
@@ -80,7 +81,7 @@ Future<bool> checkInternet() async {
 String calculateDiscount(
     {required double salePriceTotal, required double priceTotal}) {
   return 'خصم '.tr +
-      '${((1 - (salePriceTotal / priceTotal)) * 100).round().toString()}%';
+      '${((1 - (salePriceTotal / priceTotal)) * 100).ceil().toString()}%';
 }
 
 String replaceArabicNumber(String input) {
@@ -91,4 +92,8 @@ String replaceArabicNumber(String input) {
     input = input.replaceAll(arabic[i], english[i]);
   }
   return input;
+}
+
+extension E on String {
+  String lastChars(int n) => substring(length - n);
 }

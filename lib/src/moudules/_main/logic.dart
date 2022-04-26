@@ -1,26 +1,27 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'package:html/parser.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:entaj/src/app_config.dart';
-import 'package:entaj/src/binding.dart';
-import 'package:entaj/src/data/hive/wishlist/hive_controller.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/home_screen_old_theme_model.dart';
-import 'package:entaj/src/entities/category_model.dart';
-import 'package:entaj/src/entities/home_screen_model.dart';
-import 'package:entaj/src/entities/setting_model.dart';
-import 'package:entaj/src/moudules/delivery_option/view.dart';
-import 'package:entaj/src/moudules/_main/view.dart';
-import 'package:entaj/src/moudules/notification/view.dart';
-import 'package:entaj/src/moudules/search/view.dart';
-import 'package:entaj/src/utils/custom_widget/custom_indicator.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import '../../app_config.dart';
+import '../../data/hive/wishlist/hive_controller.dart';
+import '../../data/remote/api_requests.dart';
+import '../../entities/faq_model.dart';
+import '../../entities/home_screen_old_theme_model.dart';
+import '../../entities/category_model.dart';
+import '../../entities/home_screen_model.dart';
+import '../../entities/setting_model.dart';
+import '../delivery_option/view.dart';
+import '../notification/view.dart';
+import '../search/view.dart';
+import '../../utils/error_handler/error_handler.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart' as ui;
-import '../../entities/OfferResponseModel.dart';
+import '../../.env.dart';
+import '../../entities/offer_response_model.dart';
 import '../../entities/page_model.dart';
+import '../../entities/module_model.dart' as module_model;
 import '../../utils/functions.dart';
 import 'tabs/account/view.dart';
 import 'tabs/cart/view.dart';
@@ -37,11 +38,13 @@ class MainLogic extends GetxController {
     super.onInit();
   }
 
+  List<FaqModel> faqList = [];
   List<PageModel> pagesList = [];
   ui.Widget _currentScreen = HomePage();
   List<CategoryModel> categoriesList = [];
 
   HomeScreenModel? homeScreenModel;
+  module_model.Settings? footerSettings;
   HomeScreenOldThemeModel? homeScreenOldThemeModel;
   Slider? slider;
   Testimonials? testimonials;
@@ -52,13 +55,44 @@ class MainLogic extends GetxController {
   bool isPagesLoading = false;
   bool isCategoriesLoading = false;
   bool isHomeLoading = false;
+  bool isFaqLoading = false;
   bool isStoreSettingLoading = false;
   bool showAnnouncementBar = true;
   int? selectedCountry;
+  PageModel? pageModelPrivacy;
+  PageModel? pageModelTerms;
+  PageModel? pageModelSuggestions;
+  PageModel? pageModelRefund;
+  int? selectedIndex;
 
   get navigatorValue => _navigatorValue;
 
   get currentScreen => _currentScreen;
+
+
+
+  Future<void> getFaqs() async {
+    selectedIndex = null;
+    try {
+      var res = await _apiRequests.getFaqs();
+      faqList = (res.data['payload'] as List)
+          .map((e) => FaqModel.fromJson(e))
+          .toList();
+    } catch (e) {
+      ErrorHandler.handleError(e);
+    }
+    update(['faq']);
+  }
+
+  openTap(int index) {
+    if(selectedIndex == index){
+      selectedIndex = null;
+      update();
+      return;
+    }
+    selectedIndex = index;
+    update(['faq']);
+  }
 
   Future<bool> checkInternetConnection() async {
     var connection =
@@ -191,21 +225,32 @@ class MainLogic extends GetxController {
     update(['categories', 'categories2', 'categoriesMenu']);
   }
 
-  Future<void> getHomeScreen() async {
+  Future<void> getHomeScreen({String? themeId}) async {
     isHomeLoading = true;
     update();
     try {
-      if (AppConfig.isSoreUseOldTheme) {
-        var response = await _apiRequests.getHomeScreenOldTheme();
+      if (AppConfig.isSoreUseNewTheme) {
+        var response = await _apiRequests.getHomeScreenOldTheme(themeId);
         homeScreenOldThemeModel =
             HomeScreenOldThemeModel.fromJson(response.data);
+
+        homeScreenOldThemeModel?.payload?.files?.forEach((element) {
+          if (element.name == 'footer.twig') {
+            if (element.modules?.isNotEmpty == true) {
+              footerSettings = element.modules?.first.settings;
+            }
+          }
+        });
+
         await getOffers();
       } else {
         var response = await _apiRequests.getHomeScreen();
+        homeScreenModel = HomeScreenModel.fromJson(response.data['payload']);
+        // log('##########');
+        // log(response.data.toString());
         slider = Slider.fromJson(response.data['payload']['slider']);
         testimonials =
             Testimonials.fromJson(response.data['payload']['testimonials']);
-        homeScreenModel = HomeScreenModel.fromJson(response.data['payload']);
 
         await getOffers();
         showAnnouncementBar = true;
@@ -222,8 +267,17 @@ class MainLogic extends GetxController {
     update();
     try {
       var response = await _apiRequests.getStoreSetting();
+      log(json.encode(response.data));
       settingModel = SettingModel.fromJson(response.data['payload']);
-      //   log(response.data.toString());
+      var storefrontThemeId = settingModel?.settings?.storefrontTheme?.id;
+      log("storefrontThemeId => " + storefrontThemeId.toString());
+      if (storefrontThemeId == softThemeId) {
+        AppConfig.isSoreUseNewTheme = true;
+        getHomeScreen(themeId: storefrontThemeId);
+      } else {
+        AppConfig.isSoreUseNewTheme = false;
+        getHomeScreen();
+      }
       showAnnouncementBar = true;
       int index = 0;
       settingModel?.settings?.currencies?.forEach((element) {
@@ -234,6 +288,8 @@ class MainLogic extends GetxController {
       });
     } catch (e) {
       hasInternet = await ErrorHandler.handleError(e);
+      AppConfig.isSoreUseNewTheme = false;
+      getHomeScreen();
     }
     isStoreSettingLoading = false;
     update();
@@ -250,7 +306,7 @@ class MainLogic extends GetxController {
     getStoreSetting();
     getPages(false);
     getCategories();
-    getHomeScreen();
+    //getHomeScreen();
   }
 
   changeCountrySelected(int index) {
@@ -264,11 +320,71 @@ class MainLogic extends GetxController {
       var currency = settingModel?.settings?.currencies?[selectedCountry!];
       HiveController.generalBox.put('currency', currency?.code);
       await _apiRequests.onInit();
-      getHomeScreen();
+      // getHomeScreen();
       getStoreSetting();
       getCategories();
       Get.back();
     } catch (e) {}
+  }
+
+  Future<void> getPrivacyPolicy() async {
+    try {
+      var response = await _apiRequests.getPrivacyPolicy();
+      if (response.data.toString().contains('This store doesn')) {
+        return;
+      }
+      pageModelPrivacy = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModelPrivacy?.content);
+      pageModelPrivacy?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
+    } catch (e) {
+      ErrorHandler.handleError(e);
+    }
+  }
+
+  Future<void> getComplaintsAndSuggestions() async {
+    try {
+      var response = await _apiRequests.getComplaintsAndSuggestions();
+      if (response.data.toString().contains('This store doesn')) {
+        return;
+      }
+      pageModelSuggestions = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModelSuggestions?.content);
+      pageModelSuggestions?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
+    } catch (e) {
+      ErrorHandler.handleError(e);
+    }
+  }
+
+  Future<void> getRefundPolicy() async {
+    try {
+      var response = await _apiRequests.getRefundPolicy();
+      if (response.data.toString().contains('This store doesn')) {
+        return;
+      }
+      pageModelRefund = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModelRefund?.content);
+      pageModelRefund?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
+    } catch (e) {
+      ErrorHandler.handleError(e);
+    }
+  }
+
+  Future<void> getTermsAndConditions() async {
+    try {
+      var response = await _apiRequests.getTermsAndConditions();
+      if (response.data.toString().contains('This store doesn')) {
+        return;
+      }
+      pageModelTerms = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModelTerms?.content);
+      pageModelTerms?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
+    } catch (e) {
+      ErrorHandler.handleError(e);
+    }
   }
 
   Future<void> getOffers() async {
@@ -280,7 +396,13 @@ class MainLogic extends GetxController {
           element.modules?.forEach((element2) {
             element2.settings?.category?.items?.forEach((element3) {
               productsIds.add(element3.id!);
-              log(element3.id.toString());
+            });
+          });
+        }
+        if (element.name == 'products-section.twig') {
+          element.modules?.forEach((element2) {
+            element2.settings?.products?.items?.forEach((element3) {
+              productsIds.add(element3.id!);
             });
           });
         }
@@ -382,7 +504,6 @@ class MainLogic extends GetxController {
         if (element.name == 'category-products-section.twig') {
           element.modules?.forEach((element2) {
             element2.settings?.category?.items?.forEach((element3) {
-
               offerList.forEach((elementOffer) {
                 if (elementOffer.productIds?.contains(element3.id) == true) {
                   element3.offerLabel = elementOffer.name;
@@ -392,7 +513,19 @@ class MainLogic extends GetxController {
           });
         }
       });
-
+      homeScreenOldThemeModel?.payload?.files?.forEach((element) {
+        if (element.name == 'products-section.twig') {
+          element.modules?.forEach((element2) {
+            element2.settings?.products?.items?.forEach((element3) {
+              offerList.forEach((elementOffer) {
+                if (elementOffer.productIds?.contains(element3.id) == true) {
+                  element3.offerLabel = elementOffer.name;
+                }
+              });
+            });
+          });
+        }
+      });
     } catch (e) {}
   }
 }

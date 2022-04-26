@@ -1,8 +1,8 @@
 import 'dart:developer';
 
-import 'package:entaj/src/entities/product_details_model.dart';
-//import 'package:entaj/src/entities/product_model.dart';
-import 'package:entaj/src/utils/functions.dart';
+import 'category_model.dart';
+import 'product_details_model.dart';
+import '../utils/functions.dart';
 
 import '../app_config.dart';
 
@@ -20,23 +20,60 @@ class HomeScreenModel {
   Featured_categories? featuredCategories;
   Brands? brands;
   Testimonials? testimonials;
+  List<ProductDetailsModel>? products;
 
   HomeScreenModel.fromJson(dynamic json) {
-    slider = json['slider'] != null ? Slider.fromJson(json['slider']) : null;
-    promotionImage = json['promotion_image'] != null ? PromotionImage.fromJson(json['promotion_image']) : null;
-    storeDescription = json['store_description'] != null ? StoreDescription.fromJson(json['store_description']) : null;
-    featuredProducts = json['featured_products'] != null ? FeaturedProducts.fromJson(json['featured_products']) : null;
-    featuredProducts2 = json['featured_products_2'] != null ? FeaturedProducts.fromJson(json['featured_products_2']) : null;
-    featuredProducts3 = json['featured_products_3'] != null ? FeaturedProducts.fromJson(json['featured_products_3']) : null;
-    featuredProducts4 = json['featured_products_4'] != null ? FeaturedProducts.fromJson(json['featured_products_4']) : null;
-    featuredProductsPromoted = json['featured_products_promoted'] != null ? FeaturedProducts.fromJson(json['featured_products_promoted']) : null;
-    recentProducts = json['recent_products'] != null ? FeaturedProducts.fromJson(json['recent_products']) : null;
-    onSaleProducts = json['on_sale_products'] != null ? FeaturedProducts.fromJson(json['on_sale_products']) : null;
-    featuredCategories = json['featured_categories'] != null ? Featured_categories.fromJson(json['featured_categories']) : null;
-    brands = json['brands'] != null ? Brands.fromJson(json['brands']) : null;
-    testimonials = json['testimonials'] != null ? Testimonials.fromJson(json['testimonials']) : null;
-  }
 
+    if (json['default'] != null) {
+
+      if (json['default']['products'] != null) {
+        products = [];
+        json['default']['products'].forEach((v) {
+          products?.add(ProductDetailsModel.fromJson(v));
+        });
+
+      }/*
+      products = (json['default']['products'] as List)
+          .map((e) => ProductDetailsModel.fromJson(e))
+          .toList();*/
+      return;
+    }
+    slider = json['slider'] != null ? Slider.fromJson(json['slider']) : null;
+    promotionImage = json['promotion_image'] != null
+        ? PromotionImage.fromJson(json['promotion_image'])
+        : null;
+    storeDescription = json['store_description'] != null
+        ? StoreDescription.fromJson(json['store_description'])
+        : null;
+    featuredProducts = json['featured_products'] != null
+        ? FeaturedProducts.fromJson(json['featured_products'])
+        : null;
+    featuredProducts2 = json['featured_products_2'] != null
+        ? FeaturedProducts.fromJson(json['featured_products_2'])
+        : null;
+    featuredProducts3 = json['featured_products_3'] != null
+        ? FeaturedProducts.fromJson(json['featured_products_3'])
+        : null;
+    featuredProducts4 = json['featured_products_4'] != null
+        ? FeaturedProducts.fromJson(json['featured_products_4'])
+        : null;
+    featuredProductsPromoted = json['featured_products_promoted'] != null
+        ? FeaturedProducts.fromJson(json['featured_products_promoted'])
+        : null;
+    recentProducts = json['recent_products'] != null
+        ? FeaturedProducts.fromJson(json['recent_products'])
+        : null;
+    onSaleProducts = json['on_sale_products'] != null
+        ? FeaturedProducts.fromJson(json['on_sale_products'])
+        : null;
+    featuredCategories = json['featured_categories'] != null
+        ? Featured_categories.fromJson(json['featured_categories'])
+        : null;
+    brands = json['brands'] != null ? Brands.fromJson(json['brands']) : null;
+    testimonials = json['testimonials'] != null
+        ? Testimonials.fromJson(json['testimonials'])
+        : null;
+  }
 }
 
 class Testimonials {
@@ -54,9 +91,6 @@ class Testimonials {
       });
     }
   }
-
-
-
 }
 
 class Brands {
@@ -64,10 +98,7 @@ class Brands {
   String? title;
   List<Items>? items;
 
-  Brands({
-      this.display,
-      this.title,
-      this.items});
+  Brands({this.display, this.title, this.items});
 
   Brands.fromJson(dynamic json) {
     display = json['display'];
@@ -79,26 +110,25 @@ class Brands {
       });
     }
   }
-
 }
 
 class Featured_categories {
   bool? display;
   String? title;
-  dynamic? items;
+  List<CategoryModel>? items;
 
-  Featured_categories({
-      this.display,
-      this.title,
-      this.items});
+  Featured_categories({this.display, this.title, this.items});
 
   Featured_categories.fromJson(dynamic json) {
     display = json['display'];
     title = json['title'];
-    items = json['items'];
+    if (json['items'] != null) {
+      items = [];
+      json['items'].forEach((v) {
+        items?.add(CategoryModel.fromJson(v));
+      });
+    }
   }
-
-
 }
 
 class On_sale_products {
@@ -107,16 +137,14 @@ class On_sale_products {
   More_button? moreButton;
   List<Items>? items;
 
-  On_sale_products({
-      this.display,
-      this.title,
-      this.moreButton,
-      this.items});
+  On_sale_products({this.display, this.title, this.moreButton, this.items});
 
   On_sale_products.fromJson(dynamic json) {
     display = json['display'];
     title = json['title'];
-    moreButton = json['more_button'] != null ? More_button.fromJson(json['more_button']) : null;
+    moreButton = json['more_button'] != null
+        ? More_button.fromJson(json['more_button'])
+        : null;
     if (json['items'] != null) {
       items = [];
       json['items'].forEach((v) {
@@ -124,7 +152,6 @@ class On_sale_products {
       });
     }
   }
-
 }
 
 class Items {
@@ -133,6 +160,7 @@ class Items {
   String? image;
   String? type;
   String? title;
+  String? des;
   String? text;
   String? link;
   String? sku;
@@ -167,21 +195,20 @@ class Items {
   String? createdAt;
   String? updatedAt;
 
-
-
   Items.fromJson(dynamic json) {
     id = json['id'].toString();
+    des = json['des'];
     type = json['type'];
     sku = json['sku'];
     url = json['url'];
     parentId = json['parent_id'];
     name = json['name'];
-    author = json[AppConfig.isSoreUseOldTheme ? 'name' : 'author'];
+    author = json[AppConfig.isSoreUseNewTheme ? 'name' : 'author'];
     slug = json['slug'];
     image = json['image'];
     text = json['text'];
     title = json['title'];
-    link = AppConfig.isSoreUseOldTheme ? json['url'] : json['link'];
+    link = AppConfig.isSoreUseNewTheme ? json['url'] : json['link'];
     formattedPrice = json['formatted_price'];
     formattedSalePrice = json['formatted_sale_price'];
     quantity = json['quantity'];
@@ -232,38 +259,30 @@ class Items {
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];*/
   }
-
-
 }
 
 class Seo {
   String? title;
   String? description;
 
-  Seo({
-      this.title,
-      this.description});
+  Seo({this.title, this.description});
 
   Seo.fromJson(dynamic json) {
     title = json['title'];
     description = json['description'];
   }
-
 }
 
 class Weight {
   dynamic? value;
   String? unit;
 
-  Weight({
-      this.value,
-      this.unit});
+  Weight({this.value, this.unit});
 
   Weight.fromJson(dynamic json) {
     value = json['value'];
     unit = json['unit'];
   }
-
 }
 
 class Categories {
@@ -275,14 +294,14 @@ class Categories {
   dynamic? image;
   dynamic? displayOrder;
 
-  Categories({
-      this.id,
-      this.name,
-      this.slug,
-      this.description,
-      this.coverImage,
-      this.image,
-      this.displayOrder});
+  Categories(
+      {this.id,
+        this.name,
+        this.slug,
+        this.description,
+        this.coverImage,
+        this.image,
+        this.displayOrder});
 
   Categories.fromJson(dynamic json) {
     id = json['id'];
@@ -293,45 +312,43 @@ class Categories {
     image = json['image'];
     displayOrder = json['display_order'];
   }
-
 }
 
 class More_button {
   String? text;
   String? url;
 
-  More_button({
-      this.text,
-      this.url});
+  More_button({this.text, this.url});
 
   More_button.fromJson(dynamic json) {
     text = json['text'];
     url = json['url'];
   }
-
-
 }
-
 
 class FeaturedProducts {
   bool? display;
+  String? url;
   String? title;
+  String? id;
   More_button? moreButton;
   List<ProductDetailsModel>? items;
 
   FeaturedProducts.fromJson(dynamic json) {
     display = json['display'];
-    title = AppConfig.isSoreUseOldTheme ? json['name'] :  json['title'];
-    moreButton = json['more_button'] != null ? More_button.fromJson(json['more_button']) : null;
-    if (json[AppConfig.isSoreUseOldTheme ? 'products' : 'items'] != null) {
+    url = json['url'];
+    id = json['id'].toString();
+    title = AppConfig.isSoreUseNewTheme ? json['name'] : json['title'];
+    moreButton = json['more_button'] != null
+        ? More_button.fromJson(json['more_button'])
+        : null;
+    if (json[AppConfig.isSoreUseNewTheme ? 'products' : 'items'] != null) {
       items = [];
-      json[AppConfig.isSoreUseOldTheme ? 'products' : 'items'].forEach((v) {
+      json[AppConfig.isSoreUseNewTheme ? 'products' : 'items'].forEach((v) {
         items?.add(ProductDetailsModel.fromJson(v));
       });
     }
   }
-
-
 }
 
 class StoreDescription {
@@ -343,14 +360,14 @@ class StoreDescription {
   bool? showSocialMediaIcons;
   SocialMediaIcons? socialMediaIcons;
 
-  StoreDescription({
-      this.display,
-      this.image,
-      this.style,
-      this.title,
-      this.text,
-      this.showSocialMediaIcons,
-      this.socialMediaIcons});
+  StoreDescription(
+      {this.display,
+        this.image,
+        this.style,
+        this.title,
+        this.text,
+        this.showSocialMediaIcons,
+        this.socialMediaIcons});
 
   StoreDescription.fromJson(dynamic json) {
     display = json['display'];
@@ -359,10 +376,10 @@ class StoreDescription {
     title = json['title'];
     text = json['text'];
     showSocialMediaIcons = json['show_social_media_icons'];
-    socialMediaIcons = json['social_media_icons'] != null ? SocialMediaIcons.fromJson(json['social_media_icons']) : null;
+    socialMediaIcons = json['social_media_icons'] != null
+        ? SocialMediaIcons.fromJson(json['social_media_icons'])
+        : null;
   }
-
-
 }
 
 class SocialMediaIcons {
@@ -373,13 +390,13 @@ class SocialMediaIcons {
   String? maroof;
   dynamic? website;
 
-  SocialMediaIcons({
-      this.facebook,
-      this.twitter,
-      this.instagram,
-      this.snapchat,
-      this.maroof,
-      this.website});
+  SocialMediaIcons(
+      {this.facebook,
+        this.twitter,
+        this.instagram,
+        this.snapchat,
+        this.maroof,
+        this.website});
 
   SocialMediaIcons.fromJson(dynamic json) {
     facebook = json['facebook'];
@@ -389,25 +406,18 @@ class SocialMediaIcons {
     maroof = json['maroof'];
     website = json['website'];
   }
-
-
-
 }
 
 class Style {
   String? foregroundColor;
   String? backgroundColor;
 
-  Style({
-      this.foregroundColor,
-      this.backgroundColor});
+  Style({this.foregroundColor, this.backgroundColor});
 
   Style.fromJson(dynamic json) {
     foregroundColor = json['foreground_color'];
     backgroundColor = json['background_color'];
   }
-
-
 }
 
 class PromotionImage {
@@ -418,13 +428,13 @@ class PromotionImage {
   String? buttonText;
   String? link;
 
-  PromotionImage({
-      this.display,
-      this.image,
-      this.title,
-      this.text,
-      this.buttonText,
-      this.link});
+  PromotionImage(
+      {this.display,
+        this.image,
+        this.title,
+        this.text,
+        this.buttonText,
+        this.link});
 
   PromotionImage.fromJson(dynamic json) {
     display = json['display'];
@@ -434,9 +444,6 @@ class PromotionImage {
     buttonText = json['button_text'];
     link = json['link'];
   }
-
-
-
 }
 
 class Slider {
@@ -452,5 +459,4 @@ class Slider {
       });
     }
   }
-
 }

@@ -1,8 +1,6 @@
-import 'package:entaj/src/data/hive/wishlist/hive_controller.dart';
-import 'package:entaj/src/entities/home_screen_model.dart';
-import 'package:entaj/src/utils/custom_widget/custom_image.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import '../../data/hive/wishlist/hive_controller.dart';
+import '../custom_widget/custom_image.dart';
+import '../custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -148,7 +146,7 @@ class ItemWishlist extends StatelessWidget {
                           child: CustomText(
                             product?.productFormattedSalePrice ??
                                 product?.productFormattedPrice,
-                            color: greenColor,
+                            color: secondaryColor,
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                           ),
@@ -206,7 +204,7 @@ class ItemWishlist extends StatelessWidget {
                                               strokeWidth: 1,
                                               valueColor:
                                               AlwaysStoppedAnimation<
-                                                  Color>(greenColor),
+                                                  Color>(secondaryColor),
                                             ))
                                             : CustomText(
                                           product?.productQuantity != 0

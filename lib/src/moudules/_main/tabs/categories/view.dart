@@ -1,7 +1,6 @@
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/utils/item_widget/item_category.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import '../../../../images.dart';
+import '../../logic.dart';
+import '../../../../utils/item_widget/item_category.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
@@ -54,7 +53,7 @@ class CategoriesPage extends StatelessWidget {
                                                 mainAxisSpacing: 15,
                                                 childAspectRatio: 1),
                                         itemBuilder: (context, index) =>
-                                            const ItemCategory(null)),
+                                            const ItemCategory(null , null)),
                                   )
                                 : logic.categoriesList.isEmpty
                                     ? Container(
@@ -104,7 +103,7 @@ class CategoriesPage extends StatelessWidget {
                                                 childAspectRatio: 1),
                                         itemBuilder: (context, index) =>
                                             ItemCategory(
-                                                logic.categoriesList[index]));
+                                                logic.categoriesList[index] , null));
                           }),
                     )
                   ],

@@ -1,6 +1,6 @@
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/validation/validation.dart';
+import '../../utils/custom_widget/custom_button_widget.dart';
+import '../../utils/custom_widget/custom_text.dart';
+import '../../utils/validation/validation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';

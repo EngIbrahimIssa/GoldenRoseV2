@@ -1,12 +1,12 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:entaj/src/entities/bank_response_model.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/moudules/order_details/view.dart';
-import 'package:entaj/src/moudules/upload_transfer/logic.dart';
-import 'package:entaj/src/utils/custom_widget/custom_button_widget.dart';
-import 'package:entaj/src/utils/custom_widget/custom_image.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/validation/validation.dart';
+import '../../entities/bank_response_model.dart';
+import '../../images.dart';
+import '../order_details/view.dart';
+import 'logic.dart';
+import '../../utils/custom_widget/custom_button_widget.dart';
+import '../../utils/custom_widget/custom_image.dart';
+import '../../utils/custom_widget/custom_text.dart';
+import '../../utils/validation/validation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -371,7 +371,7 @@ class UploadTransferPage extends StatelessWidget {
                     ),
                     CustomButtonWidget(
                         title: "تأكيد التحويل".tr,
-                        color: greenColor,
+                        color: secondaryColor,
                         loading: logic.isLoading,
                         onClick: () => logic.uploadTransfer(code)),
                     SizedBox(

@@ -1,12 +1,12 @@
 import 'dart:developer';
 
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/entities/order_model.dart';
-import 'package:entaj/src/entities/reviews_model.dart';
-import 'package:entaj/src/moudules/dialog/add_review_dialog.dart';
-import 'package:entaj/src/moudules/_main/logic.dart';
-import 'package:entaj/src/moudules/_main/view.dart';
-import 'package:entaj/src/utils/error_handler/error_handler.dart';
+import '../../data/remote/api_requests.dart';
+import '../../entities/order_model.dart';
+import '../../entities/reviews_model.dart';
+import '../dialog/add_review_dialog.dart';
+import '../_main/logic.dart';
+import '../_main/view.dart';
+import '../../utils/error_handler/error_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -35,10 +35,10 @@ class OrderDetailsLogic extends GetxController {
     lastOrderCode = orderCode;
     try {
       var response = await _apiRequests.getOrdersDetails(orderCode);
-      log(response.data.toString());
+     // log(response.data.toString());
       orderModel = OrderModel.fromJson(response.data['payload']);
       orderModel?.products?.forEach((element) {
-        getProductReviews(element.id);
+        getProductReviews(element.parentId ?? element.id , element.id);
       });
     } catch (e) {
       ErrorHandler.handleError(e);
@@ -47,23 +47,28 @@ class OrderDetailsLogic extends GetxController {
     update();
   }
 
-  Future<void> getProductReviews(String? productId) async {
+  Future<void> getProductReviews(String? productId, String? id) async {
     isReviewsLoading = true;
-    update([productId ?? '']);
+    update([id ?? '']);
     try {
       var response = await _apiRequests.getCustomerProductReviews(productId);
       log(response.data.toString());
       var payload = response.data['payload'] as List;
       if (payload.isNotEmpty) {
         orderModel?.products
-            ?.singleWhere((element) => element.id == productId)
+            ?.singleWhere((element) {
+              if(element.parentId != null) {
+                return element.parentId == productId;
+              }
+              return element.id == productId;
+            })
             .reviews = Reviews.fromJson(response.data['payload'][0]);
       }
     } catch (e) {
       ErrorHandler.handleError(e);
     }
     isReviewsLoading = false;
-    update([productId ?? '']);
+    update([id ?? '']);
   }
 
   void addProductReviews(String? productId) async {
@@ -82,7 +87,7 @@ class OrderDetailsLogic extends GetxController {
           comment: commentController.text,
           rating: rating,
           isAnonymous: isAnonymous ? 1 : 0);
-      await getProductReviews(productId);
+      await getProductReviews(productId , productId);
       Get.back();
       Fluttertoast.showToast(msg: "تم اضافة مراجعتك بنجاح".tr);
     } catch (e) {

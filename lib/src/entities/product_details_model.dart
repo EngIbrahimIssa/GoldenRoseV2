@@ -1,6 +1,9 @@
-import 'package:entaj/src/entities/category_model.dart';
-import 'package:entaj/src/entities/reviews_model.dart';
-import 'package:entaj/src/utils/functions.dart';
+import 'dart:developer';
+
+import 'category_model.dart';
+import 'meta_response_model.dart';
+import 'reviews_model.dart';
+import '../utils/functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -25,11 +28,12 @@ class ProductDetailsModel {
   bool? hasOptions;
   bool? hasFields;
   List<Images>? images;
+  List<Images>? originalImages;
   bool? isDraft;
   dynamic? quantity;
   bool? isInfinite;
   String? htmlUrl;
-  dynamic? weight;
+  Weight? weight;
   List<dynamic>? keywords;
   bool? requiresShipping;
   bool? isTaxable;
@@ -51,8 +55,11 @@ class ProductDetailsModel {
   String? previousProduct;
   Rating? rating;
   PurchaseRestrictions? purchaseRestrictions;
+  MetaResponseModel? meta;
 
   ProductDetailsModel.fromJson(dynamic json) {
+    meta =
+        json['meta'] == null ? null : MetaResponseModel.fromJson(json['meta']);
     id = json['id'];
     sku = json['sku'];
     parentId = json['parent_id'];
@@ -65,11 +72,27 @@ class ProductDetailsModel {
       description = description?.replaceAll(sub, '');
       description = description?.replaceAll('/figure&gt;', '');
     } catch (e) {}
+    try {
+      var x = description?.indexOf('&lt;yt-formatted-string');
+      var y = description?.indexOf('/yt-formatted-string&gt;');
+      var sub = description!.substring(x!, y);
+      description = description?.replaceAll(sub, '');
+      description = description?.replaceAll('/yt-formatted-string&gt;', '');
+    } catch (e) {}
     slug = json['slug'];
+
     salePrice = checkDouble(json['sale_price'] ?? 0.0);
     price = checkDouble(json['price'] ?? 0.0);
     formattedPrice = json['formatted_price'];
     formattedSalePrice = json['formatted_sale_price'];
+
+    if (meta != null) {
+      if (meta?.bundleOffer != null) {
+        salePrice = meta?.bundleOffer?.priceAfterDiscount ?? 0;
+        formattedSalePrice = meta?.bundleOffer?.priceAfterDiscountString;
+      }
+    }
+
     currency = json['currency'];
     currencySymbol = json['currency_symbol'];
     if (json['attributes'] != null) {
@@ -98,12 +121,18 @@ class ProductDetailsModel {
         images?.add(Images.fromJson(v));
       });
     }
+    if (json['images'] != null) {
+      originalImages = [];
+      json['images'].forEach((v) {
+        originalImages?.add(Images.fromJson(v));
+      });
+    }
 
     isDraft = json['is_draft'];
     quantity = json['quantity'];
     isInfinite = json['is_infinite'];
     htmlUrl = json['html_url'];
-    weight = json['weight'];
+    weight = json['weight'] != null ? Weight.fromJson(json['weight']) : null;
 /*    if (json['keywords'] != null) {
       keywords = [];
       json['keywords'].forEach((v) {
@@ -176,6 +205,16 @@ class Attribute {
   }
 }
 
+class Weight {
+  String? unit;
+  double? value;
+
+  Weight.fromJson(dynamic json) {
+    unit = json['unit'];
+    value = json['value'] == null ? null : checkDouble(json['value']);
+  }
+}
+
 class Options {
   String? name;
   String? slug;
@@ -193,6 +232,7 @@ class PurchaseRestrictions {
   int? minQuantityPerCart;
 
   PurchaseRestrictions.fromJson(dynamic json) {
+    if (json == null) return;
     minQuantityPerCart = json['min_quantity_per_cart'];
     maxQuantityPerCart = json['max_quantity_per_cart'];
   }
@@ -260,17 +300,35 @@ class CustomFields {
   int? displayOrder;
   bool? isRequired;
   double? price;
+  String? additionsPriceString;
   String? formattedPrice;
+  String? formattedValue;
   TextEditingController? controller;
   bool? isPublished;
+  String? realName;
   String? name;
+  String? groupName;
+  String? value;
   int? minChoices;
   int? maxChoices;
+  int? additionsPrice;
   bool? canChooseMultipleOptions;
   List<Choices>? choices;
 
   CustomFields.fromJson(dynamic json) {
     id = json['id'];
+    value = json['value'];
+    realName = json['name'];
+    groupName = json['group_name'];
+    additionsPriceString = json['additions_price_string'];
+    try {
+      if (json['additions_price'] is int) {
+        additionsPrice = json['additions_price'];
+      } else {
+        additionsPrice = int.parse(json['additions_price']);
+      }
+    } catch (e) {}
+    formattedValue = json['formatted_value'];
     type = json['type'];
     label = getLabelInString(json['label']);
     hint = getLabelInString(json['hint']);

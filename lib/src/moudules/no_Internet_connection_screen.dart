@@ -9,9 +9,9 @@ class NoInternetConnectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      color: Colors.grey.shade50,
       width: double.infinity,
-      height: 600.h,
+      height: 700.h,
       padding: const EdgeInsets.only(left: 50, right: 50),
       child: Column(
         mainAxisSize: MainAxisSize.max,

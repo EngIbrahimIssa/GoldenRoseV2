@@ -1,10 +1,10 @@
-import 'package:entaj/src/entities/reviews_model.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 
 import '../../colors.dart';
+import '../../entities/reviews_model.dart';
+import '../custom_widget/custom_text.dart';
 
 class ItemReview extends StatelessWidget {
   final Reviews? review;

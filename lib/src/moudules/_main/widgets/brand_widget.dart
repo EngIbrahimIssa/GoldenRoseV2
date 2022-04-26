@@ -1,4 +1,4 @@
-import 'package:entaj/src/entities/home_screen_model.dart';
+import '../../../entities/home_screen_model.dart';
 import 'package:flutter/material.dart';
 
 import '../../../utils/custom_widget/custom_image.dart';

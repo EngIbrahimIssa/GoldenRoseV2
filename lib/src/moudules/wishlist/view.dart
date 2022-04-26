@@ -1,12 +1,10 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/data/hive/wishlist/hive_controller.dart';
-import 'package:entaj/src/images.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/item_widget/item_product.dart';
+import '../../colors.dart';
+import '../../data/hive/wishlist/hive_controller.dart';
+import '../../images.dart';
+import '../../utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../app_config.dart';

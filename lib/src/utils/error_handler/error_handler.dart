@@ -2,10 +2,11 @@ import 'dart:developer';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
-import 'package:entaj/src/data/remote/api_requests.dart';
-import 'package:entaj/src/data/shared_preferences/pref_manger.dart';
-import 'package:entaj/src/moudules/_main/tabs/cart/logic.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
+import '../../../main.dart';
+import '../../data/remote/api_requests.dart';
+import '../../data/shared_preferences/pref_manger.dart';
+import '../../moudules/_main/tabs/cart/logic.dart';
+import '../custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -16,15 +17,26 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ErrorHandler {
   static Future<bool> handleError(
-    Object e, {
-    bool? showToast,
-  }) async {
+      Object e, {
+        bool? showToast,
+      }) async {
     if (e is DioError) {
+      if (e.type == DioErrorType.connectTimeout) {
+        final ConnectivityResult result =
+        await Connectivity().checkConnectivity();
+        if (result == ConnectivityResult.none) {
+          Fluttertoast.showToast(
+              msg: 'يرجى التأكد من اتصالك بالإنترنت'.tr,
+              toastLength: Toast.LENGTH_SHORT);
+          return false;
+        }
+        return false;
+      }
       if (e.response != null && showToast == null) {
         try {
           if (e.response!.data['message']['description']
-                  .toString()
-                  .contains('Error in cart session') ||
+              .toString()
+              .contains('Error in cart session') ||
               e.response!.data['message']['description']
                   .toString()
                   .contains('خطأ في سلة الشراء')) {
@@ -51,13 +63,18 @@ class ErrorHandler {
               'Unauthenticated') {
             //refreshToken();
           } else {
-            int errorLength =  e.response!.data['message']['description'].toString().length;
+            int errorLength =
+                e.response!.data['message']['description'].toString().length;
             Widget widget = Container(
-              height: errorLength < 40 ? 40.0.h : errorLength < 80  ? 70 : 100,
-              margin:  EdgeInsets.only(left: 50.w , right: 50.w , bottom: 60.h),
+              height: errorLength < 32
+                  ? 40.0.h
+                  : errorLength < 70
+                  ? 70.h
+                  : 100.h,
+              margin: EdgeInsets.only(left: 50.w, right: 50.w, bottom: 60.h),
               padding: const EdgeInsets.symmetric(horizontal: 15),
               decoration: BoxDecoration(
-                color: primaryColor,
+                color: errorBackgroundColor,
                 borderRadius: BorderRadius.circular(30.0),
               ),
               child: Row(
@@ -71,27 +88,32 @@ class ErrorHandler {
                   ),
                   Expanded(
                       child: Center(
-                          child: CustomText(
-                           e.response!.data['message']['description'].toString(),
-                            color: Colors.white,
-                            textAlign: TextAlign.center,
+                          child: Directionality(
+                            textDirection: isArabicLanguage
+                                ? TextDirection.rtl
+                                : TextDirection.ltr,
+                            child: CustomText(
+                              e.response!.data['message']['description'].toString(),
+                              color: Colors.white,
+                              textAlign: TextAlign.center,
+                            ),
                           ))),
                 ],
               ),
             );
-           showToastWidget(widget, position: ToastPosition.bottom);
-           /*Fluttertoast.showToast(
+            showToastWidget(widget, position: ToastPosition.bottom);
+            /*Fluttertoast.showToast(
                 msg: e.response!.data['message']['description'].toString(),
                 toastLength: Toast.LENGTH_LONG);*/
           }
         } catch (ee) {
-          log("ErrorHandler catch ==>  "+ ee.toString());
+          log("ErrorHandler catch ==>  " + ee.toString());
           Fluttertoast.showToast(msg: e.response!.data.toString());
         }
         log("ErrorHandler DioError ==> " + e.response!.data.toString());
       } else {
         final ConnectivityResult result =
-            await Connectivity().checkConnectivity();
+        await Connectivity().checkConnectivity();
         if (result == ConnectivityResult.none) {
           Fluttertoast.showToast(
               msg: 'يرجى التأكد من اتصالك بالإنترنت'.tr,
@@ -106,21 +128,27 @@ class ErrorHandler {
     }
   }
 
-  static Future<void> generateSession(bool isCancel) async {
+  static Future<void> generateSession(bool isCancel , {renewSession = false}) async {
     try {
       final ApiRequests _apiRequests = Get.find();
       final PrefManger _prefManger = Get.find();
       final CartLogic _cartLogic = Get.find();
-      var response = isCancel ? await _apiRequests.cloneCart() :await _apiRequests.createSession();
-      var session = response.data['payload'][isCancel ? 'session_id':'cart_session_id'];
+      var response = isCancel
+          ? await _apiRequests.cloneCart()
+          : await _apiRequests.createSession();
+      var session =
+      response.data['payload'][isCancel ? 'session_id' : 'cart_session_id'];
       log("new session => $session");
       await _prefManger.setSession(session);
       await _apiRequests.onInit();
       if (isCancel) {
         _cartLogic.getCartItems(true);
       } else {
-        Fluttertoast.showToast(
-            msg: 'حاول مجدداً', toastLength: Toast.LENGTH_LONG);
+        _cartLogic.getCartItems(true);
+        if(!renewSession) {
+          Fluttertoast.showToast(
+              msg: 'حاول مجدداً', toastLength: Toast.LENGTH_LONG);
+        }
       }
     } catch (e) {
       ErrorHandler.handleError(e);

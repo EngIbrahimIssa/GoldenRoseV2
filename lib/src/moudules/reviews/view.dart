@@ -1,8 +1,7 @@
-import 'package:entaj/src/colors.dart';
-import 'package:entaj/src/utils/custom_widget/custom_text.dart';
-import 'package:entaj/src/utils/item_widget/item_review.dart';
+import '../../colors.dart';
+import '../../utils/custom_widget/custom_text.dart';
+import '../../utils/item_widget/item_review.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
 
 import 'logic.dart';
@@ -42,7 +41,7 @@ class ReviewsPage extends StatelessWidget {
                   ),
                   const Icon(
                     Icons.add_circle,
-                    color: greenColor,
+                    color: secondaryColor,
                   ),
                   const SizedBox(
                     width: 12,
