@@ -20,7 +20,7 @@ class AppConfig {
   static const bool enhancements = true;
 
   static const String fontName = 'majalla';
-  static const double fontDecIncValue = 2;
+  static const double fontDecIncValue = 2 ;
 
   static const countriesCodes = ['+966','+971','+965','+968','+973','+974'];
 

@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>849666711107-3qgq82doivtpp718d7fiqq14rtbaqjqd.apps.googleusercontent.com</string>
+	<string>850423324254-q8ov39gpv6sjgam2hoai18j8jgitvdi8.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.849666711107-3qgq82doivtpp718d7fiqq14rtbaqjqd</string>
+	<string>com.googleusercontent.apps.850423324254-q8ov39gpv6sjgam2hoai18j8jgitvdi8</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCv83BjZBRfYuGN2s2c5rpzTMjSm596kRs</string>
+	<string>AIzaSyC5ASSPCcUmH3fv5gN71z3KYefiRJHTCIQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>849666711107</string>
+	<string>850423324254</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.appsbunches.goldenrose</string>
+	<string>com.appsbunches.goldenrose22</string>
 	<key>PROJECT_ID</key>
-	<string>entaj-99888</string>
+	<string>golden-rose-2</string>
 	<key>STORAGE_BUCKET</key>
-	<string>entaj-99888.appspot.com</string>
+	<string>golden-rose-2.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:849666711107:ios:6347d8fe3cbaefe7af3ef6</string>
+	<string>1:850423324254:ios:b684d5cba0baeb7e17decf</string>
 </dict>
 </plist>

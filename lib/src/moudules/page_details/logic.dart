@@ -18,7 +18,12 @@ class PageDetailsLogic extends GetxController {
       slug = slug?.replaceAll('/pages/', '');
       slug = slug?.replaceAll('/blogs/', '');
       var response = await _apiRequests.getPagesDetailsBySlug(slug: slug);
+
       pageModel = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModel?.content);
+      pageModel?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
+
     } catch (e) {
       ErrorHandler.handleError(e);
     }
@@ -32,6 +37,9 @@ class PageDetailsLogic extends GetxController {
     try {
       var response = await _apiRequests.getPagesDetails(pageId: pageId);
       pageModel = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModel?.content);
+      pageModel?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
     } catch (e) {
       ErrorHandler.handleError(e);
     }
@@ -51,6 +59,10 @@ class PageDetailsLogic extends GetxController {
         return;
       }
       pageModel = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModel?.content);
+      pageModel?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
+
     } catch (e) {
       ErrorHandler.handleError(e);
     }
@@ -70,6 +82,9 @@ class PageDetailsLogic extends GetxController {
         return;
       }
       pageModel = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModel?.content);
+      pageModel?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
     } catch (e) {
       ErrorHandler.handleError(e);
     }
@@ -111,6 +126,9 @@ class PageDetailsLogic extends GetxController {
         return;
       }
       pageModel = PageModel.fromJson(response.data['payload']);
+      final document = parse(pageModel?.content);
+      pageModel?.contentWithoutTags =
+          parse(document.body?.text).documentElement?.text;
       //log(pageModel?.content ?? '');
     } catch (e) {
       ErrorHandler.handleError(e);

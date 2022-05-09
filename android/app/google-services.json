@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "562837858057",
-    "project_id": "goldenrose-df198",
-    "storage_bucket": "goldenrose-df198.appspot.com"
+    "project_number": "850423324254",
+    "project_id": "golden-rose-2",
+    "storage_bucket": "golden-rose-2.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:562837858057:android:f66289dd587e84ac1a55d8",
+        "mobilesdk_app_id": "1:850423324254:android:005e62b9abd5fc6c17decf",
         "android_client_info": {
-          "package_name": "com.appsbunches.goldenrose"
+          "package_name": "com.appsbunches.goldenrose2"
         }
       },
       "oauth_client": [
         {
-          "client_id": "562837858057-3610a3b9d4ocai7o5ebp9i4omc2p7ou1.apps.googleusercontent.com",
+          "client_id": "850423324254-iicvlmjj49dmdqjard837bvcsgu18bpm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDt2EhaHXjZUYOH6Advfr8Jeu8aFp50b5k"
+          "current_key": "AIzaSyCDehgUqJjQk-5Sl8-8x40j-c9ex1uZ3JU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "562837858057-3610a3b9d4ocai7o5ebp9i4omc2p7ou1.apps.googleusercontent.com",
+              "client_id": "850423324254-iicvlmjj49dmdqjard837bvcsgu18bpm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

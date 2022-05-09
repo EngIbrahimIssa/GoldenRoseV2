@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:entaj/src/colors.dart';
 import 'package:entaj/src/images.dart';
+import 'package:entaj/src/utils/custom_widget/custom_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -23,6 +24,7 @@ class _SplashPageState extends State<SplashPage>
   late AnimationController controller;
   late Animation<Offset> offset;
   late Animation<Offset> offset2;
+  late Animation<Offset> offset3;
 
   @override
   void initState() {
@@ -36,6 +38,9 @@ class _SplashPageState extends State<SplashPage>
 
     offset2 =
         Tween<Offset>(begin: const Offset(-1, 0), end:Offset.zero)
+            .animate(controller);
+    offset3 =
+        Tween<Offset>(begin: const Offset(0, 1), end:Offset.zero)
             .animate(controller);
     controller.forward();
 
@@ -59,26 +64,53 @@ class _SplashPageState extends State<SplashPage>
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Directionality(
               textDirection: TextDirection.rtl,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
+                  Spacer(),
+                  Spacer(),
+                  Spacer(),
+                  Spacer(),
                   Expanded(
-                      child: SlideTransition(
-                          position: offset, child: Image.asset(imageTextAr))),
-                  Expanded(
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 3000),
-                      curve: Curves.fastOutSlowIn,
-                      width: _width,
-                      height: _height,
-                      child: Image.asset(imageRose, scale: 2),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: SlideTransition(
+                                position: offset, child: Image.asset(imageTextAr))),
+                        Expanded(
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 3000),
+                            curve: Curves.fastOutSlowIn,
+                            width: _width,
+                            height: _height,
+                            child: Image.asset(imageRose, scale: 2),
+                          ),
+                        ),
+                        Expanded(
+                            child: SlideTransition(
+                                position: offset2, child: Image.asset(imageTextEn))),
+                      ],
                     ),
                   ),
-                  Expanded(
+
+                  SizedBox(
+                    height: 200,
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
                       child: SlideTransition(
-                          position: offset2, child: Image.asset(imageTextEn))),
+                          position: offset3, child: CustomText("WHOHLESALE",fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white,)
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  Spacer(),
+
+
                 ],
               ),
+
+
+                //
             ),
           ),
         ));

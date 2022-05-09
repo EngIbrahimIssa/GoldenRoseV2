@@ -25,10 +25,10 @@ class PageDetailsPage extends StatelessWidget {
 
   PageDetailsPage(
       {this.pageModel,
-      required this.type,
-      required this.title,
-      this.url,
-      Key? key})
+        required this.type,
+        required this.title,
+        this.url,
+        Key? key})
       : super(key: key);
   InAppWebViewGroupOptions options = InAppWebViewGroupOptions(
       crossPlatform: InAppWebViewOptions(
@@ -61,16 +61,16 @@ class PageDetailsPage extends StatelessWidget {
       log('type11 ===== $type');
       if (url?.contains('shipping-and-payment') == true) {
         //  Get.off( DeliveryOptionPage(), binding: Binding());
-      } else if (url?.contains('privacy-policy') == true) {
+      } else if (url?.contains('privacy-policy') == true && url?.contains('/blogs/') !=true) {
         type = 1;
         logic.getPrivacyPolicy();
-      } else if (url?.contains('refund-exchange-policy') == true) {
+      } else if (url?.contains('refund-exchange-policy') == true  && url?.contains('/blogs/') !=true) {
         type = 2;
         logic.getRefundPolicy();
-      } else if (url?.contains('terms-and-conditions') == true) {
+      } else if (url?.contains('terms-and-conditions') == true  && url?.contains('/blogs/') !=true) {
         type = 3;
         logic.getTermsAndConditions();
-      } else if (url?.contains('complaints-and-suggestions') == true) {
+      } else if (url?.contains('complaints-and-suggestions') == true && url?.contains('/blogs/') !=true) {
         type = 6;
         logic.getComplaintsAndSuggestions();
       } else if (url?.contains('https://') == true) {
@@ -91,42 +91,42 @@ class PageDetailsPage extends StatelessWidget {
         body: logic.isLoading
             ? const Center(child: CircularProgressIndicator())
             : RefreshIndicator(
-                onRefresh: () async {
-                  if (type == 1) {
-                    await logic.getPrivacyPolicy();
-                  } else if (type == 2) {
-                    await logic.getRefundPolicy();
-                  } else if (type == 3) {
-                    await logic.getTermsAndConditions();
-                  } else if (type == 6) {
-                    await logic.getComplaintsAndSuggestions();
-                  } else {
-                    //   logic.getPageDetails(pageModel?.id);
-                  }
-                },
-                child: (logic.pageModel?.contentWithoutTags?.length ?? 0) < 1
-                    ? SizedBox(
-                        height: 700.h,
-                        child: Center(
-                          child: CustomText(
-                              'نعتذر ، لا يوجد محتوى لهذة الصفحة حاليا'.tr),
-                        ),
-                      )
-                    : logic.pageModel?.content?.contains('iframe') == true
-                        ? InAppWebView(
-                            initialOptions: options,
-                            initialData: InAppWebViewInitialData(
-                                data: logic.pageModel?.content ??
-                                    logic.pageModel?.sEOPageDescription ??
-                                    ''),
-                          )
-                        : SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.all(15),
-                              child: buildHtml(type > 2),
-                            ),
-                          ),
-              ),
+          onRefresh: () async {
+            if (type == 1) {
+              await logic.getPrivacyPolicy();
+            } else if (type == 2) {
+              await logic.getRefundPolicy();
+            } else if (type == 3) {
+              await logic.getTermsAndConditions();
+            } else if (type == 6) {
+              await logic.getComplaintsAndSuggestions();
+            } else {
+              //   logic.getPageDetails(pageModel?.id);
+            }
+          },
+          child: (logic.pageModel?.contentWithoutTags?.length ?? 0) < 1
+              ? SizedBox(
+            height: 700.h,
+            child: Center(
+              child: CustomText(
+                  'نعتذر ، لا يوجد محتوى لهذة الصفحة حاليا'.tr),
+            ),
+          )
+              : logic.pageModel?.content?.contains('iframe') == true
+              ? InAppWebView(
+            initialOptions: options,
+            initialData: InAppWebViewInitialData(
+                data: logic.pageModel?.content ??
+                    logic.pageModel?.sEOPageDescription ??
+                    ''),
+          )
+              : SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(15),
+              child: buildHtml(type > 2),
+            ),
+          ),
+        ),
       );
     });
   }
@@ -142,9 +142,9 @@ class PageDetailsPage extends StatelessWidget {
               launch(url ?? '');
             })
         : */
-        HtmlWidget(
-      logic.pageModel?.content ?? logic.pageModel?.sEOPageDescription ?? '',
-      onTapUrl: (url) => launch(url),
-    );
+      HtmlWidget(
+        logic.pageModel?.content ?? logic.pageModel?.sEOPageDescription ?? '',
+        onTapUrl: (url) => launch(url),
+      );
   }
 }

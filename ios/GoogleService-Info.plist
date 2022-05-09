@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>562837858057-i3610er5ig1b8dd31472qk2pgh6p7021.apps.googleusercontent.com</string>
+	<string>850423324254-q8ov39gpv6sjgam2hoai18j8jgitvdi8.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.562837858057-i3610er5ig1b8dd31472qk2pgh6p7021</string>
+	<string>com.googleusercontent.apps.850423324254-q8ov39gpv6sjgam2hoai18j8jgitvdi8</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAt1J9eBv-TcQvwwCWwGkX9EusJ_8eS9b8</string>
+	<string>AIzaSyC5ASSPCcUmH3fv5gN71z3KYefiRJHTCIQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>562837858057</string>
+	<string>850423324254</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.appsbunches.goldenrose</string>
+	<string>com.appsbunches.goldenrose22</string>
 	<key>PROJECT_ID</key>
-	<string>goldenrose-df198</string>
+	<string>golden-rose-2</string>
 	<key>STORAGE_BUCKET</key>
-	<string>goldenrose-df198.appspot.com</string>
+	<string>golden-rose-2.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:562837858057:ios:08607860a76921201a55d8</string>
+	<string>1:850423324254:ios:b684d5cba0baeb7e17decf</string>
 </dict>
 </plist>
